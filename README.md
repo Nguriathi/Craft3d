@@ -1,3 +1,3 @@
-# Craft3dv2
+# Craft3d
 
-https://nguriathi.github.io/Craft3dv2/
+https://nguriathi.github.io/Craft3d/
