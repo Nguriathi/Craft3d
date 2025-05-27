@@ -1,996 +1,758 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craft3d | Immersive 3D Experiences</title>
+    <title>Craft3d | Modern 3D Design Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Roboto+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-        
         :root {
-            --primary-dark: #0f172a;
-            --secondary-dark: #1e293b;
-            --accent-dark: #7dd3fc;
-            --primary-light: #f8fafc;
-            --secondary-light: #e2e8f0;
-            --accent-light: #f59e0b;
-            --scroll-indicator: #4a90e2;
+            --primary-dark: #4a90e2;
+            --primary-light: #ff6b6b;
+            --bg-dark: #121212;
+            --text-dark: #f5f5f5;
+            --bg-light: #f5f5f5;
+            --text-light: #121212;
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif;
-            transition: all 0.5s ease;
+            font-family: 'Roboto Slab', serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
         }
-        
-        .dark {
-            background-color: var(--primary-dark);
-            color: var(--primary-light);
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
         }
-        
-        .light {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            --scroll-indicator: #ff6b6b;
+
+        /* Scroll progress bar */
+        .progress-container {
+            width: 100%;
+            height: 3px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
-        
-        .heading-font {
-            font-family: 'Space Grotesk', sans-serif;
+
+        .progress-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-dark), #8a2be2);
+            width: 0%;
+            transition: width 0.1s;
         }
-        
-        .code-font {
-            font-family: 'Space Mono', monospace;
+
+        .light .progress-bar {
+            background: linear-gradient(90deg, var(--primary-light), #ff8e53);
         }
-        
-        .clay-card {
-            border-radius: 16px;
-            box-shadow: 
-                8px 8px 16px rgba(0, 0, 0, 0.1),
-                -8px -8px 16px rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .clay-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                12px 12px 24px rgba(0, 0, 0, 0.15),
-                -12px -12px 24px rgba(255, 255, 255, 0.08);
-        }
-        
-        .clay-button {
-            border-radius: 12px;
-            box-shadow: 
-                4px 4px 8px rgba(0, 0, 0, 0.1),
-                -4px -4px 8px rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .clay-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                6px 6px 12px rgba(0, 0, 0, 0.15),
-                -6px -6px 12px rgba(255, 255, 255, 0.08);
-        }
-        
-        .theme-toggle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.5s ease;
-            box-shadow: 
-                4px 4px 8px rgba(0, 0, 0, 0.1),
-                -4px -4px 8px rgba(255, 255, 255, 0.05);
-        }
-        
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-        
+
+        /* Custom cursor */
         .cursor {
             position: fixed;
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(74, 144, 226, 0.5);
             pointer-events: none;
             mix-blend-mode: difference;
             z-index: 9999;
             transform: translate(-50%, -50%);
+            transition: transform 0.2s, width 0.2s, height 0.2s, background-color 0.2s;
         }
-        
+
         .cursor-follower {
             position: fixed;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.3);
             pointer-events: none;
             z-index: 9998;
             transform: translate(-50%, -50%);
-            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+            transition: transform 0.4s, width 0.4s, height 0.4s;
         }
-        
-        .scroll-indicator {
+
+        .cursor.active {
+            transform: translate(-50%, -50%) scale(1.5);
+            background-color: rgba(255, 107, 107, 0.8);
+        }
+
+        .cursor-follower.active {
+            transform: translate(-50%, -50%) scale(1.2);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+
+        .cursor.click {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        /* Navigation */
+        .nav-item::after {
+            content: '';
             position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0) translateX(-50%);
-            }
-            40% {
-                transform: translateY(-20px) translateX(-50%);
-            }
-            60% {
-                transform: translateY(-10px) translateX(-50%);
-            }
-        }
-        
-        #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        
-        .project-card {
-            perspective: 1000px;
-        }
-        
-        .project-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-        }
-        
-    
-        
-        .project-card-front, .project-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 16px;
-        }
-        
-        .project-card-back {
-            transform: rotateY(180deg);
-        }
-        
-        .progress-bar {
-            height: 4px;
             width: 0;
-            position: fixed;
-            top: 0;
+            height: 2px;
+            bottom: -2px;
             left: 0;
-            z-index: 9999;
-        }
-        
-        .dark .progress-bar {
-            background: linear-gradient(90deg, #7dd3fc, #0ea5e9);
-        }
-        
-        .light .progress-bar {
-            background: linear-gradient(90deg, #f59e0b, #f97316);
-        }
-        
-        .video-background {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 2;
+            background-color: var(--primary-dark);
+            transition: width 0.3s;
         }
 
-        
-        .logo {
-            font-weight: 700;
-            letter-spacing: -1px;
-            position: relative;
-        }
-        
-        .logo::after {
-            content: '3d';
-            position: absolute;
-            top: -8px;
-            right: -20px;
-            font-size: 0.6em;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .animate-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        
-        .animate-in.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .delay-1 {
-            transition-delay: 0.1s;
-        }
-        
-        .delay-2 {
-            transition-delay: 0.2s;
-        }
-        
-        .delay-3 {
-            transition-delay: 0.3s;
-        }
-        
-        .delay-4 {
-            transition-delay: 0.4s;
-        }
-        
-        .parallax {
-            transition: transform 0.1s ease-out;
+        .light .nav-item::after {
+            background-color: var(--primary-light);
         }
 
+        .nav-item:hover::after {
+            width: 100%;
+        }
+
+        /* Hero section */
+        .hero-overlay {
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+        }
+
+        .light .hero-overlay {
+            background: linear-gradient(90deg, rgba(245, 245, 245, 0.7) 0%, rgba(245, 245, 245, 0.3) 100%);
+        }
+
+        /* 3D viewer section */
+        .model-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .model-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Quiz section */
+        .quiz-option {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .quiz-option:hover {
+            transform: translateY(-3px);
+        }
+
+        .quiz-option.correct {
+            animation: correctAnswer 0.5s;
+        }
+
+        .quiz-option.incorrect {
+            animation: incorrectAnswer 0.5s;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrectAnswer {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Project modal */
+        .project-modal {
+            transition: opacity 0.3s, visibility 0.3s;
+        }
 
         /* Hamburger menu */
         .hamburger {
-            display: none;
-            cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
-        
+
         .hamburger.active {
             transform: rotate(90deg);
         }
-        
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(2, 10, 26, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 90;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        
-        body.light-mode .menu-overlay {
-            background-color: rgba(232, 236, 239, 0.95);
-        }
-        
-        .menu-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .menu-item {
-            font-size: 2rem;
-            margin: 1rem 0;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-        
-        .menu-overlay.active .menu-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* 3D Model Container */
-        .model-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        /* Quiz Styles */
-        .quiz-option.correct {
-            background-color: #10b981 !important;
-            color: white !important;
-        }
-        
-        .quiz-option.incorrect {
-            background-color: #ef4444 !important;
-            color: white !important;
-        }
-        
-        .badge-earned {
-            opacity: 1 !important;
-            color: #f59e0b !important;
+
+        .mobile-menu {
+            transition: transform 0.3s, opacity 0.3s;
         }
 
-
-         /* Responsive */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .hamburger {
-                display: block;
-            }
-            
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Dark/light mode toggle */
+        .toggle-ball {
+            transition: transform 0.3s;
         }
+
+        .light .toggle-ball {
+            transform: translateX(24px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
     </style>
 </head>
 <body class="dark">
-    <div class="progress-bar"></div>
+    <!-- Scroll progress bar -->
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Custom cursor -->
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
-    
-    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-opacity-80 dark:bg-opacity-80 dark:bg-gray-900 bg-white shadow-sm">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold heading-font flex items-center logo">
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Craft</span>
+
+    <!-- Navigation -->
+    <nav class="fixed top-3 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-center py-4 px-6 bg-white/10 dark:bg-black/10 backdrop-blur-md rounded-full shadow-lg">
+            <a href="#" class="text-2xl font-bold text-white dark:text-white">
+                <span class="text-primary-dark dark:text-primary-light">Craft</span>3d
             </a>
-            
-            <nav class="hidden md:flex space-x-8">
-                <a href="#home" class="nav-link dark:text-gray-300 dark:hover:text-white text-gray-700 hover:text-black font-medium">Home</a>
-                <a href="#projects" class="nav-link dark:text-gray-300 dark:hover:text-white text-gray-700 hover:text-black font-medium">Projects</a>
-                <a href="#showcase" class="nav-link dark:text-gray-300 dark:hover:text-white text-gray-700 hover:text-black font-medium">3D Showcase</a>
-                <a href="#quiz" class="nav-link dark:text-gray-300 dark:hover:text-white text-gray-700 hover:text-black font-medium">Quiz</a>
-                <a href="#contact" class="nav-link dark:text-gray-300 dark:hover:text-white text-gray-700 hover:text-black font-medium">Contact</a>
-            </nav>
 
-            <!-- Mobile menu overlay 
-            <div class="menu-overlay">
-                <a href="#home" class="menu-item">Home</a>
-                <a href="#projects" class="menu-item">Projects</a>
-                <a href="#showcase" class="menu-item">3D Showcase</a>
-                <a href="#quiz" class="menu-item">Quiz</a>
-                <a href="#contact" class="menu-item">Contact</a>
-            </div>-->
-            
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Home</a>
+                <a href="#models" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">3D Models</a>
+                <a href="#gallery" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">360° Gallery</a>
+                <a href="#projects" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Projects</a>
+                <a href="#quiz" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Quiz</a>
+                <a href="#contact" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Contact</a>
+            </div>
+
             <div class="flex items-center space-x-4">
-                <div id="theme-toggle" class="theme-toggle dark:bg-gray-800 bg-gray-100">
-                    <i class="fas fa-sun text-amber-400 text-lg"></i>
+                <div class="relative">
+                    <div class="w-12 h-6 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer" id="theme-toggle">
+                        <div class="toggle-ball w-5 h-5 bg-white dark:bg-gray-300 rounded-full shadow-md"></div>
+                    </div>
                 </div>
 
-                <div class="hamburger md:hidden">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-                </div>
-
-                <!--<button class="md:hidden text-gray-600 dark:text-gray-300 focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button> -->
-                
+                <button class="md:hidden text-white dark:text-white focus:outline-none" id="menu-toggle">
+                    <div class="hamburger">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </div>
+                </button>
             </div>
         </div>
-    </header>
-    
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-            <video 
-                autoplay 
-                muted 
-                loop 
-                playsinline 
-                preload="auto"
-                class="video-background"
-                aria-hidden="true"
-                style="opacity:0; transition: opacity 1s;"
-            >
-                <source src="media/videos/cups.webm" type="video/webm">
-                <source src="media/videos/cups.mp4" type="video/mp4">
-                <!-- Fallback image for unsupported browsers -->
-                <img src="media/videos/cups-fallback.jpg" alt="">
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu fixed inset-0 bg-black/90 dark:bg-black/95 z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transform translate-y-10" id="mobile-menu">
+        <div class="flex flex-col items-center space-y-8">
+            <a href="#home" class="text-2xl text-white animate-fade-in delay-1">Home</a>
+            <a href="#models" class="text-2xl text-white animate-fade-in delay-2">3D Models</a>
+            <a href="#gallery" class="text-2xl text-white animate-fade-in delay-3">360° Gallery</a>
+            <a href="#projects" class="text-2xl text-white animate-fade-in delay-4">Projects</a>
+            <a href="#quiz" class="text-2xl text-white animate-fade-in delay-5">Quiz</a>
+            <a href="#contact" class="text-2xl text-white animate-fade-in delay-6">Contact</a>
+        </div>
+        
+        <div class="absolute bottom-12 flex space-x-6 animate-fade-in delay-7">
+            <a href="#" class="text-white text-xl"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white text-xl"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-white text-xl"><i class="fab fa-dribbble"></i></a>
+            <a href="#" class="text-white text-xl"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+
+    <!-- Hero section -->
+    <section id="home" class="relative h-screen flex items-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <video autoplay muted loop class="w-full h-full object-cover">
+                <source src="Media/videos/cups.mp4" type="video/mp4">
             </video>
-            <div class="video-overlay"></div>
-            
-            <div class="container mx-auto px-6 py-20 z-10 hero-content">
-                <div class="flex flex-col md:flex-row items-center">
-                    <div class="md:w-1/2 mb-12 md:mb-0">
-                        <h1 class="text-5xl md:text-6xl font-bold heading-font mb-6 text-white leading-tight animate-in active">
-                            Crafting <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Digital</span> Dimensions
-                        </h1>
-                        <p class="text-xl text-gray-200 mb-8 max-w-lg animate-in delay-1 active">
-                            We blend cutting-edge 3D technology with minimalist design to create immersive web experiences that captivate and engage.
-                        </p>
-                        <div class="flex space-x-4 animate-in delay-2 active">
-                            <button class="clay-button px-8 py-3 bg-blue-500 dark:bg-cyan-600 text-white font-semibold rounded-lg">
-                                Explore Projects
-                            </button>
-                            <button class="clay-button px-8 py-3 dark:bg-gray-800 bg-gray-100 dark:text-white text-gray-800 font-semibold rounded-lg">
-                                Learn More
-                            </button>
-                        </div>
-                    </div>
-                    <div class="md:w-1/2 flex justify-center animate-in delay-3 active">
-                        <div class="relative w-full max-w-md h-96">
-                            <div id="hero-3d" class="w-full h-full"></div>
-                        </div>
-                    </div>
+            <div class="absolute inset-0 hero-overlay"></div>
+        </div>
+
+        <div class="relative z-10 container mx-auto px-6">
+            <div class="max-w-2xl">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white dark:text-white animate-fade-in">
+                    Crafting the Future of <span class="text-primary-dark dark:text-primary-light">3D Design</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-200 dark:text-gray-300 mb-8 animate-fade-in delay-1">
+                    We create immersive 3D experiences that captivate and inspire. Our studio blends cutting-edge technology with artistic vision.
+                </p>
+                <div class="flex space-x-4 animate-fade-in delay-2">
+                    <a href="#models" class="px-8 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-full hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
+                        Explore Models
+                    </a>
+                    <a href="#contact" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:bg-opacity-10 transition-all transform hover:-translate-y-1">
+                        Contact Us
+                    </a>
                 </div>
             </div>
-            <div class="scroll-indicator">
-                <div class="animate-bounce w-8 h-8 text-white">
-                    <i class="fas fa-chevron-down text-2xl"></i>
-                </div>
-            </div> 
-        </section>
-        
-        <!-- Craft3D Projects Section -->
-        <section id="projects" class="py-20 dark:bg-gray-900 bg-gray-50">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold heading-font mb-4 dark:text-white text-gray-900 animate-in">
-                        Craft3D <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Projects</span>
-                    </h2>
-                    <p class="text-xl dark:text-gray-300 text-gray-600 max-w-2xl mx-auto animate-in delay-1">
-                        Our portfolio showcases innovative solutions that combine aesthetics with functionality.
-                    </p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Project 1 -->
-                    <div class="project-card h-96 animate-in delay-2">
-                        <div class="project-card-inner w-full h-full">
-                            <div class="project-card-front clay-card dark:bg-gray-800 bg-white p-6 flex flex-col">
-                                <div class="h-48 mb-4 rounded-xl overflow-hidden">
-                                    <img src="Media/images/smartwatch.png" alt="3D Smartwatch" class="w-full h-full object-cover">
-                                </div>
-                                <h3 class="text-2xl font-bold heading-font mb-2 dark:text-white text-gray-900">3D Smartwatch</h3>
-                                <p class="dark:text-gray-300 text-gray-600 mb-4">Creative animation with transitions</p>
-                                <div class="mt-auto">
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-orange-300 text-orange-600 text-sm font-medium">Blender</span>
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-red-300 text-red-600 text-sm font-medium ml-2">Ae</span>
+        </div>
 
-                                    <button class="clay-button px-6 py-2 bg-blue-500 dark:bg-cyan-600 text-white font-medium rounded-lg mx-auto">
-                                    View 
-                                    </button>
-                                
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    
-                    <!-- Project 2 -->
-                    <div class="project-card h-96 animate-in delay-3">
-                        <div class="project-card-inner w-full h-full">
-                            <div class="project-card-front clay-card dark:bg-gray-800 bg-white p-6 flex flex-col">
-                                <div class="h-48 mb-4 rounded-xl overflow-hidden">
-                                    <img src="Media/images/1st.jpg" alt="Lifetrons Speaker" class="w-full h-full object-cover">
-                                </div>
-                                <h3 class="text-2xl font-bold heading-font mb-2 dark:text-white text-gray-900">Lifetrons Speaker</h3>
-                                <p class="dark:text-gray-300 text-gray-600 mb-4">3d Modeled Bluetooth Speaker</p>
-                                <div class="mt-auto">
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-orange-300 text-orange-600 text-sm font-medium">Blender</span>
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-yellow-300 text-yellow-600 text-sm font-medium ml-2">WebXR</span>
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-red-300 text-red-600 text-sm font-medium ml-2">Ae</span>
+        <div class="absolute bottom-8 left-0 right-0 flex justify-center animate-fade-in delay-3">
+            <a href="#models" class="text-white animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </a>
+        </div>
+    </section>
 
-                                    <button class="clay-button px-6 py-2 bg-blue-500 dark:bg-cyan-600 text-white font-medium rounded-lg mx-auto">
-                                    View 
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- <div class="project-card-back clay-card dark:bg-gray-800 bg-white p-6 flex flex-col justify-center">
-                                <h3 class="text-2xl font-bold heading-font mb-4 dark:text-white text-gray-900 text-center">Project Details</h3>
-                                <p class="dark:text-gray-300 text-gray-600 mb-4 text-center">Try furniture in your space before buying with our augmented reality platform.</p>
-                                <button class="clay-button px-6 py-2 bg-blue-500 dark:bg-cyan-600 text-white font-medium rounded-lg mx-auto">
-                                    View Case Study
-                                </button>
-                            </div> -->
-                        </div>
-                    </div>
-                    
-                    <!-- Project 3 -->
-                    <div class="project-card h-96 animate-in delay-4">
-                        <div class="project-card-inner w-full h-full">
-                            <div class="project-card-front clay-card dark:bg-gray-800 bg-white p-6 flex flex-col">
-                                <div class="h-48 mb-4 rounded-xl overflow-hidden">
-                                    <img src="Media/images/aman1.jpg" alt="Neon City" class="w-full h-full object-cover">
-                                </div>
-                                <h3 class="text-2xl font-bold heading-font mb-2 dark:text-white text-gray-900">Aman</h3>
-                                <p class="dark:text-gray-300 text-gray-600 mb-4">Luxury Beauty Product</p>
-                                <div class="mt-auto">
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-pink-300 text-pink-600 text-sm font-medium">GLSL</span>
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-red-300 text-red-600 text-sm font-medium ml-2">Shaders</span>
-                                    <span class="inline-block px-3 py-1 rounded-full dark:bg-gray-700 bg-gray-200 dark:text-orange-300 text-orange-600 text-sm font-medium ml-2">Blender</span>
-
-                                    <button class="clay-button px-6 py-2 bg-blue-500 dark:bg-cyan-600 text-white font-medium rounded-lg mx-auto">
-                                    View 
-                                    </button>
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-
-
-                
-                
-                <div class="text-center mt-16 animate-in delay-4">
-                    <button class="clay-button px-8 py-3 dark:bg-gray-800 bg-gray-100 dark:text-white text-gray-800 font-semibold rounded-lg inline-flex items-center">
-                        View All Projects
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                </div>
+    <!-- 3D Models Section -->
+    <section id="models" class="py-20 bg-gray-900 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
+                    Interactive <span class="text-primary-dark dark:text-primary-light">3D Models</span>
+                </h2>
+                <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
+                    Explore our collection of meticulously crafted 3D models. Click to interact with each model.
+                </p>
             </div>
-        </section>
-        
-        <!-- 3D Showcase Section -->
-        <section id="showcase" class="py-20 relative">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold heading-font mb-4 dark:text-white text-gray-900 animate-in">
-                        Interactive <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">3D Showcase</span>
-                    </h2>
-                    <p class="text-xl dark:text-gray-300 text-gray-600 max-w-2xl mx-auto animate-in delay-1">
-                        Explore our latest 3D model with intuitive controls and realistic rendering.
-                    </p>
-                </div>
-                
-                <div class="flex flex-col lg:flex-row items-center">
-                    <div class="lg:w-1/2 mb-10 lg:mb-0 lg:pr-10 animate-in delay-2">
-                        <h3 class="text-2xl font-bold heading-font mb-4 dark:text-white text-gray-900">Futuristic Smartwatch</h3>
-                        <p class="dark:text-gray-300 text-gray-600 mb-6">
-                            Our latest wearable technology prototype featuring advanced biometric tracking and holographic display capabilities. 
-                            The model showcases intricate details of the design and functionality.
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Model 1 -->
+                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
+                    <div class="h-64 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">3D Model 1</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Abstract Sculpture</h3>
+                        <p class="text-gray-300 dark:text-gray-400 mb-4">
+                            A modern abstract sculpture with fluid forms and dynamic lighting.
                         </p>
-                        <div class="grid grid-cols-2 gap-4 mb-8">
-                            <div class="clay-card dark:bg-gray-800 bg-white p-4 rounded-xl">
-                                <div class="text-blue-400 dark:text-cyan-400 mb-2">
-                                    <i class="fas fa-tachometer-alt text-2xl"></i>
-                                </div>
-                                <h4 class="font-semibold dark:text-white text-gray-900">Performance</h4>
-                                <p class="text-sm dark:text-gray-400 text-gray-600">Quad-core processor</p>
-                            </div>
-                            <div class="clay-card dark:bg-gray-800 bg-white p-4 rounded-xl">
-                                <div class="text-purple-400 dark:text-purple-400 mb-2">
-                                    <i class="fas fa-battery-full text-2xl"></i>
-                                </div>
-                                <h4 class="font-semibold dark:text-white text-gray-900">Battery</h4>
-                                <p class="text-sm dark:text-gray-400 text-gray-600">7-day lifespan</p>
-                            </div>
-                            <div class="clay-card dark:bg-gray-800 bg-white p-4 rounded-xl">
-                                <div class="text-green-400 dark:text-green-400 mb-2">
-                                    <i class="fas fa-heartbeat text-2xl"></i>
-                                </div>
-                                <h4 class="font-semibold dark:text-white text-gray-900">Health</h4>
-                                <p class="text-sm dark:text-gray-400 text-gray-600">12 sensors</p>
-                            </div>
-                            <div class="clay-card dark:bg-gray-800 bg-white p-4 rounded-xl">
-                                <div class="text-yellow-400 dark:text-amber-400 mb-2">
-                                    <i class="fas fa-water text-2xl"></i>
-                                </div>
-                                <h4 class="font-semibold dark:text-white text-gray-900">Resistance</h4>
-                                <p class="text-sm dark:text-gray-400 text-gray-600">50m waterproof</p>
-                            </div>
-                        </div>
-                        <button class="clay-button px-8 py-3 bg-blue-500 dark:bg-cyan-600 text-white font-semibold rounded-lg">
-                            Request Demo
+                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
+                            View in 3D
                         </button>
                     </div>
-                    
-                    <div class="lg:w-1/2 h-96 lg:h-[500px] clay-card rounded-2xl overflow-hidden animate-in delay-3">
-                        <div id="3d-model" class="w-full h-full model-container"></div>
+                </div>
+
+                <!-- Model 2 -->
+                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
+                    <div class="h-64 bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">3D Model 2</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Architectural Design</h3>
+                        <p class="text-gray-300 dark:text-gray-400 mb-4">
+                            Futuristic building concept with parametric design elements.
+                        </p>
+                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
+                            View in 3D
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Model 3 -->
+                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
+                    <div class="h-64 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">3D Model 3</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Product Visualization</h3>
+                        <p class="text-gray-300 dark:text-gray-400 mb-4">
+                            High-fidelity product render with realistic materials and textures.
+                        </p>
+                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
+                            View in 3D
+                        </button>
                     </div>
                 </div>
             </div>
-        </section>
-        
-        <!-- Interactive Quiz Section -->
-        <section id="quiz" class="py-20 dark:bg-gray-900 bg-gray-50">
-            <div class="container mx-auto px-6">
-                <div class="clay-card dark:bg-gray-800 bg-white rounded-2xl p-8 md:p-12 animate-in delay-1">
-                    <div class="flex flex-col lg:flex-row items-center">
-                        <div class="lg:w-1/2 mb-10 lg:mb-0 lg:pr-10">
-                            <h2 class="text-3xl md:text-4xl font-bold heading-font mb-4 dark:text-white text-gray-900">
-                                Interactive <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Design Quiz</span>
-                            </h2>
-                            <p class="dark:text-gray-300 text-gray-600 mb-6">
-                                Test your knowledge about modern 3D web design and see how much you've learned from our showcase.
-                            </p>
-                            <div id="quiz-progress" class="mb-6">
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                                    <div class="bg-blue-500 dark:bg-cyan-500 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+    </section>
+
+    <!-- 360° Gallery Section -->
+    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+                    Immersive <span class="text-primary-dark dark:text-primary-light">360° Gallery</span>
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                    Explore our environments in full 360 degrees. Click and drag to look around each scene.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Gallery Item 1 -->
+                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-80 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">360° View 1</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Modern Office Space</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            A sleek, contemporary office environment with panoramic views.
+                        </p>
+                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
+                            Explore Space
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-80 bg-gradient-to-br from-red-400 to-purple-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">360° View 2</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Nature Retreat</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            A peaceful forest cabin surrounded by nature in all directions.
+                        </p>
+                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
+                            Explore Space
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
+                    Featured <span class="text-primary-dark dark:text-primary-light">Projects</span>
+                </h2>
+                <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
+                    Our most innovative and impactful 3D design projects from around the world.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="group relative overflow-hidden rounded-xl shadow-xl">
+                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">Project 1</div>
+                    </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Virtual Museum</h3>
+                        <p class="text-gray-300 text-center mb-4">
+                            An immersive virtual museum experience with interactive exhibits.
+                        </p>
+                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="1">
+                            View Project
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group relative overflow-hidden rounded-xl shadow-xl">
+                    <div class="h-64 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">Project 2</div>
+                    </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Augmented Reality App</h3>
+                        <p class="text-gray-300 text-center mb-4">
+                            AR application that brings 3D models into the real world.
+                        </p>
+                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="2">
+                            View Project
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="group relative overflow-hidden rounded-xl shadow-xl">
+                    <div class="h-64 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                        <div class="text-white text-4xl">Project 3</div>
+                    </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">3D Product Configurator</h3>
+                        <p class="text-gray-300 text-center mb-4">
+                            Interactive product customizer for e-commerce websites.
+                        </p>
+                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="3">
+                            View Project
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Modal -->
+    <div class="project-modal fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center opacity-0 invisible transition-all duration-300" id="project-modal">
+        <div class="relative w-full max-w-6xl h-full max-h-screen overflow-auto">
+            <button class="absolute top-6 right-6 text-white text-3xl z-50 hover:text-primary-dark dark:hover:text-primary-light transition-colors" id="close-modal">
+                &times;
+            </button>
+            <div class="bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-2xl m-6">
+                <div class="h-96 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center" id="modal-image">
+                    <!-- Project content will be loaded here -->
+                </div>
+                <div class="p-8">
+                    <h3 class="text-3xl font-bold text-white mb-4" id="modal-title">Project Title</h3>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="px-3 py-1 bg-primary-dark dark:bg-primary-light bg-opacity-20 text-primary-dark dark:text-primary-light rounded-full text-sm">3D Design</span>
+                        <span class="px-3 py-1 bg-primary-dark dark:bg-primary-light bg-opacity-20 text-primary-dark dark:text-primary-light rounded-full text-sm">Interactive</span>
+                        <span class="px-3 py-1 bg-primary-dark dark:bg-primary-light bg-opacity-20 text-primary-dark dark:text-primary-light rounded-full text-sm">WebGL</span>
+                    </div>
+                    <p class="text-gray-300 dark:text-gray-300 mb-6" id="modal-description">
+                        Project description will be loaded here.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all">
+                            Visit Website
+                        </a>
+                        <a href="#" class="px-6 py-3 border-2 border-gray-400 text-gray-300 dark:text-gray-300 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition-all">
+                            Case Study
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <section id="quiz" class="py-20 bg-gray-100 dark:bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+                    3D Design <span class="text-primary-dark dark:text-primary-light">Quiz</span>
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                    Test your knowledge of 3D design concepts with our interactive quiz.
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-white dark:bg-gray-700 rounded-xl shadow-xl overflow-hidden">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-600">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Question <span id="current-question">1</span>/7</h3>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            Score: <span id="score">0</span>/7
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                        <div class="bg-primary-dark dark:bg-primary-light h-2 rounded-full" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <h4 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white" id="question-text">
+                        What does the term "polygon count" refer to in 3D modeling?
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="options-container">
+                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
+                            The number of polygons in a 3D model
+                        </div>
+                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
+                            The color palette used for textures
+                        </div>
+                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
+                            The resolution of the final render
+                        </div>
+                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
+                            The animation frame rate
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button class="px-6 py-2 text-gray-500 dark:text-gray-400 font-semibold rounded-lg hover:text-gray-700 dark:hover:text-gray-300 transition-colors" id="prev-question" disabled>
+                            Previous
+                        </button>
+                        <button class="px-6 py-2 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all" id="next-question">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Results Modal -->
+    <div class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center opacity-0 invisible transition-all duration-300" id="quiz-results">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
+            <div class="text-5xl mb-6">🎉</div>
+            <h3 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Quiz Complete!</h3>
+            <p class="text-xl mb-6 text-gray-600 dark:text-gray-300">
+                You scored <span class="text-primary-dark dark:text-primary-light font-bold" id="final-score">0</span> out of 7!
+            </p>
+            <div class="mb-8">
+                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2">
+                    <div class="bg-primary-dark dark:bg-primary-light h-4 rounded-full" id="final-progress" style="width: 0%"></div>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400" id="result-message">Loading...</p>
+            </div>
+            <div class="flex justify-center space-x-4 mb-6">
+                <a href="#" class="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full hover:opacity-90 transition-opacity">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-700 text-white rounded-full hover:bg-gray-800 transition-colors">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            <button class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all w-full" id="close-results">
+                Back to Site
+            </button>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
+                    Get in <span class="text-primary-dark dark:text-primary-light">Touch</span>
+                </h2>
+                <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
+                    Have a project in mind or want to collaborate? We'd love to hear from you.
+                </p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-gray-800 dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 bg-gradient-to-br from-blue-500 to-indigo-600 p-8 md:p-12 flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold text-white mb-4">Contact Information</h3>
+                        <p class="text-gray-200 mb-6">
+                            Fill out the form or reach out to us directly through one of these channels.
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 text-white text-xl mr-4 mt-1">
+                                    <i class="fas fa-envelope"></i>
                                 </div>
-                                <div class="flex justify-between mt-2">
-                                    <span class="text-sm dark:text-gray-400 text-gray-600">Question <span id="current-question">1</span>/5</span>
-                                    <span class="text-sm dark:text-gray-400 text-gray-600"><span id="correct-answers">0</span> correct</span>
+                                <div>
+                                    <h4 class="font-semibold text-white">Email</h4>
+                                    <p class="text-gray-200">hello@craft3d.studio</p>
                                 </div>
                             </div>
-                            <div id="quiz-container">
-                                <div id="question-1" class="quiz-question active">
-                                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-gray-900">Which technology is primarily used for rendering 3D graphics on the web?</h3>
-                                    <div class="space-y-3">
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="true">
-                                            WebGL
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            SVG
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Canvas 2D
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            CSS 3D
-                                        </button>
-                                    </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 text-white text-xl mr-4 mt-1">
+                                    <i class="fas fa-phone-alt"></i>
                                 </div>
-                                
-                                <div id="question-2" class="quiz-question hidden">
-                                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-gray-900">What is the main advantage of using Three.js for 3D web projects?</h3>
-                                    <div class="space-y-3">
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Better performance than WebGL
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="true">
-                                            Simplifies complex WebGL code
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Doesn't require JavaScript
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Built-in VR support without plugins
-                                        </button>
-                                    </div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Phone</h4>
+                                    <p class="text-gray-200">+1 (555) 123-4567</p>
                                 </div>
-                                
-                                <div id="question-3" class="quiz-question hidden">
-                                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-gray-900">Which of these is NOT a common 3D file format?</h3>
-                                    <div class="space-y-3">
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            .glb
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            .obj
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="true">
-                                            .jpg
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            .fbx
-                                        </button>
-                                    </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 text-white text-xl mr-4 mt-1">
+                                    <i class="fas fa-map-marker-alt"></i>
                                 </div>
-                                
-                                <div id="question-4" class="quiz-question hidden">
-                                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-gray-900">What does AR stand for in WebXR?</h3>
-                                    <div class="space-y-3">
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Artificial Reality
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="true">
-                                            Augmented Reality
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Alternate Reality
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Animated Rendering
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div id="question-5" class="quiz-question hidden">
-                                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-gray-900">Which technique helps optimize 3D models for web performance?</h3>
-                                    <div class="space-y-3">
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Increasing polygon count
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Using uncompressed textures
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="true">
-                                            Mesh decimation
-                                        </button>
-                                        <button class="quiz-option clay-button w-full text-left px-4 py-3 rounded-lg dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700" data-correct="false">
-                                            Adding complex shaders
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div id="quiz-result" class="hidden text-center py-8">
-                                    <div class="text-6xl mb-6">
-                                        🎉
-                                    </div>
-                                    <h3 class="text-2xl font-bold heading-font mb-2 dark:text-white text-gray-900">Quiz Completed!</h3>
-                                    <p class="dark:text-gray-300 text-gray-600 mb-6">You got <span id="final-score" class="font-bold text-blue-500 dark:text-cyan-400">0</span> out of 5 questions correct.</p>
-                                    <button id="retry-quiz" class="clay-button px-6 py-2 bg-blue-500 dark:bg-cyan-600 text-white font-medium rounded-lg">
-                                        Try Again
-                                    </button>
+                                <div>
+                                    <h4 class="font-semibold text-white">Studio</h4>
+                                    <p class="text-gray-200">123 Design Street, Creative City</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="lg:w-1/2">
-                            <div class="clay-card dark:bg-gray-700 bg-gray-100 rounded-xl p-6 h-full flex flex-col justify-center">
-                                <div class="text-center mb-6">
-                                    <div class="inline-block p-4 rounded-full dark:bg-gray-800 bg-white">
-                                        <i class="fas fa-trophy text-4xl text-yellow-400 dark:text-amber-400"></i>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold heading-font mb-3 text-center dark:text-white text-gray-900">Test Your Knowledge</h3>
-                                <p class="dark:text-gray-300 text-gray-600 text-center mb-6">
-                                    Complete our interactive quiz to test your understanding of modern 3D web technologies and win virtual badges!
-                                </p>
-                                <div class="flex justify-center space-x-4">
-                                    <div class="badge-icon opacity-30">
-                                        <i class="fas fa-medal text-2xl text-gray-400"></i>
-                                    </div>
-                                    <div class="badge-icon opacity-30">
-                                        <i class="fas fa-star text-2xl text-gray-400"></i>
-                                    </div>
-                                    <div class="badge-icon opacity-30">
-                                        <i class="fas fa-award text-2xl text-gray-400"></i>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="mt-8 flex space-x-4">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-dribbble"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Contact Section -->
-        <section id="contact" class="py-20">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold heading-font mb-4 dark:text-white text-gray-900 animate-in">
-                        Get In <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Touch</span>
-                    </h2>
-                    <p class="text-xl dark:text-gray-300 text-gray-600 max-w-2xl mx-auto animate-in delay-1">
-                        Have a project in mind or want to learn more about our services? We'd love to hear from you.
-                    </p>
-                </div>
-                
-                <div class="flex flex-col lg:flex-row gap-12">
-                    <div class="lg:w-1/2 animate-in delay-2">
-                        <form class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="name" class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">Name</label>
-                                    <input type="text" id="name" class="w-full px-4 py-3 rounded-lg clay-card dark:bg-gray-800 bg-white dark:text-white text-gray-900 border-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label for="email" class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">Email</label>
-                                    <input type="email" id="email" class="w-full px-4 py-3 rounded-lg clay-card dark:bg-gray-800 bg-white dark:text-white text-gray-900 border-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 outline-none transition-all">
-                                </div>
+                    
+                    <div class="md:w-1/2 p-8 md:p-12">
+                        <form id="contact-form">
+                            <div class="mb-6">
+                                <label for="name" class="block text-gray-300 dark:text-gray-300 mb-2">Your Name</label>
+                                <input type="text" id="name" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light text-white placeholder-gray-400" placeholder="John Doe" required>
                             </div>
-                            <div>
-                                <label for="subject" class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">Subject</label>
-                                <input type="text" id="subject" class="w-full px-4 py-3 rounded-lg clay-card dark:bg-gray-800 bg-white dark:text-white text-gray-900 border-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 outline-none transition-all">
+                            
+                            <div class="mb-6">
+                                <label for="email" class="block text-gray-300 dark:text-gray-300 mb-2">Email Address</label>
+                                <input type="email" id="email" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light text-white placeholder-gray-400" placeholder="john@example.com" required>
                             </div>
-                            <div>
-                                <label for="message" class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">Message</label>
-                                <textarea id="message" rows="5" class="w-full px-4 py-3 rounded-lg clay-card dark:bg-gray-800 bg-white dark:text-white text-gray-900 border-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 outline-none transition-all"></textarea>
+                            
+                            <div class="mb-6">
+                                <label for="subject" class="block text-gray-300 dark:text-gray-300 mb-2">Subject</label>
+                                <input type="text" id="subject" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light text-white placeholder-gray-400" placeholder="Project Inquiry">
                             </div>
-                            <button type="submit" class="clay-button px-8 py-3 bg-blue-500 dark:bg-cyan-600 text-white font-semibold rounded-lg w-full md:w-auto">
-                                Send Message
+                            
+                            <div class="mb-6">
+                                <label for="message" class="block text-gray-300 dark:text-gray-300 mb-2">Message</label>
+                                <textarea id="message" rows="4" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light text-white placeholder-gray-400" placeholder="Tell us about your project..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="w-full px-6 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center">
+                                <span id="submit-text">Send Message</span>
+                                <svg id="submit-spinner" class="animate-spin -mr-1 ml-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
                             </button>
                         </form>
                     </div>
-                    
-                    <div class="lg:w-1/2 animate-in delay-3">
-                        <div class="clay-card dark:bg-gray-800 bg-white rounded-2xl p-8 h-full">
-                            <h3 class="text-2xl font-bold heading-font mb-6 dark:text-white text-gray-900">Contact Information</h3>
-                            
-                            <div class="space-y-6">
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 pt-1">
-                                        <div class="w-10 h-10 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-blue-500 dark:text-cyan-400">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="font-semibold dark:text-white text-gray-900">Location</h4>
-                                        <p class="dark:text-gray-300 text-gray-600">123 Design Street, Creative City</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 pt-1">
-                                        <div class="w-10 h-10 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-blue-500 dark:text-cyan-400">
-                                            <i class="fas fa-envelope"></i>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="font-semibold dark:text-white text-gray-900">Email</h4>
-                                        <p class="dark:text-gray-300 text-gray-600">hello@craft3d.design</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 pt-1">
-                                        <div class="w-10 h-10 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-blue-500 dark:text-cyan-400">
-                                            <i class="fas fa-phone-alt"></i>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="font-semibold dark:text-white text-gray-900">Phone</h4>
-                                        <p class="dark:text-gray-300 text-gray-600">+1 (555) 123-4567</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-10">
-                                <h4 class="font-semibold dark:text-white text-gray-900 mb-4">Follow Us</h4>
-                                <div class="flex space-x-4">
-                                    <a href="#" class="clay-button w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-blue-500 dark:text-cyan-400 hover:text-white hover:bg-blue-500 dark:hover:bg-cyan-500 transition-all">
-                                        <i class="fab fa-twitter text-xl"></i>
-                                    </a>
-                                    <a href="#" class="clay-button w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-all">
-                                        <i class="fab fa-linkedin-in text-xl"></i>
-                                    </a>
-                                    <a href="#" class="clay-button w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-pink-500 dark:text-pink-400 hover:text-white hover:bg-pink-500 dark:hover:bg-pink-400 transition-all">
-                                        <i class="fab fa-dribbble text-xl"></i>
-                                    </a>
-                                    <a href="#" class="clay-button w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-white hover:bg-purple-500 dark:hover:bg-purple-400 transition-all">
-                                        <i class="fab fa-behance text-xl"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </section>
-    </main>
-    
-    <footer class="dark:bg-gray-900 bg-gray-50 border-t dark:border-gray-800 border-gray-200 py-12">
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 dark:bg-gray-900 py-12 border-t border-gray-800 dark:border-gray-800">
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-6 md:mb-0">
-                    <a href="#" class="text-2xl font-bold heading-font flex items-center logo">
-                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 dark:from-amber-300 dark:to-orange-400">Craft</span>
+                    <a href="#" class="text-2xl font-bold text-white dark:text-white">
+                        <span class="text-primary-dark dark:text-primary-light">Craft</span>3d
                     </a>
-                    <p class="dark:text-gray-400 text-gray-600 mt-2">Crafting the future of digital experiences</p>
+                    <p class="text-gray-400 mt-2">
+                        Crafting the future of 3D design since 2025.
+                    </p>
                 </div>
                 
-                <div class="flex flex-wrap justify-center md:justify-end gap-6">
-                    <div>
-                        <h4 class="font-semibold dark:text-white text-gray-900 mb-3">Explore</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#home" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Home</a></li>
-                            <li><a href="#projects" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Projects</a></li>
-                            <li><a href="#showcase" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">3D Showcase</a></li>
-                            <li><a href="#quiz" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Quiz</a></li>
-                        </ul>
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-6 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                            <i class="fab fa-dribbble"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                            <i class="fab fa-github"></i>
+                        </a>
                     </div>
-                    
-                    <div>
-                        <h4 class="font-semibold dark:text-white text-gray-900 mb-3">Legal</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Privacy</a></li>
-                            <li><a href="#" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Terms</a></li>
-                            <li><a href="#" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Cookies</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold dark:text-white text-gray-900 mb-3">Connect</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">Twitter</a></li>
-                            <li><a href="#" class="dark:text-gray-400 text-gray-600 hover:dark:text-white hover:text-gray-900 transition">LinkedIn</a></li>
-                        </ul>
-                    </div>
+                    <p class="text-gray-500 text-sm">
+                        &copy; 2025 Craft3d Studio. All rights reserved.
+                    </p>
                 </div>
-            </div>
-            
-            <div class="border-t dark:border-gray-800 border-gray-200 mt-12 pt-8 text-center dark:text-gray-400 text-gray-600">
-                <p>© 2025 Craft3D. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const video = document.querySelector('.video-background');
-            if (video) {
-                video.addEventListener('canplay', () => {
-                    video.style.opacity = 1;
-                });
-            }
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollProgress = (scrollTop / scrollHeight) * 100;
+            document.querySelector('.progress-bar').style.width = scrollProgress + '%';
         });
 
-
-         // Mobile menu toggle
-        const hamburger = document.querySelector('.hamburger');
-        const menuOverlay = document.querySelector('.menu-overlay');
-        
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-        });
-        
-        // Close menu when clicking a link
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                menuOverlay.classList.remove('active');
-            });
-        });
-
-
-        // Theme Toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        const sunIcon = themeToggle.querySelector('.fa-sun');
-        const moonIcon = document.createElement('i');
-        moonIcon.className = 'fas fa-moon text-blue-400 text-lg hidden';
-        themeToggle.appendChild(moonIcon);
-        
-        // Check for saved theme preference or use preferred color scheme
-        const currentTheme = localStorage.getItem('theme') || 
-                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        body.classList.add(currentTheme);
-        
-        if (currentTheme === 'light') {
-            sunIcon.classList.add('hidden');
-            moonIcon.classList.remove('hidden');
-        }
-        
-        themeToggle.addEventListener('click', () => {
-            if (body.classList.contains('dark')) {
-                body.classList.replace('dark', 'light');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.replace('light', 'dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-        
-        // Custom Cursor
+        // Custom cursor
         const cursor = document.querySelector('.cursor');
         const cursorFollower = document.querySelector('.cursor-follower');
         
@@ -1004,52 +766,77 @@
             }, 100);
         });
         
-        // Interactive elements cursor effects
-        const interactiveElements = document.querySelectorAll('a, button, .project-card, .clay-card, .quiz-option');
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('click');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('click');
+        });
+        
+        const interactiveElements = document.querySelectorAll('a, button, input, textarea, .model-card, .quiz-option, .view-project');
         
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
-                cursorFollower.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursor.classList.add('active');
+                cursorFollower.classList.add('active');
             });
             
             el.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.classList.remove('active');
+                cursorFollower.classList.remove('active');
             });
         });
+
+        // Dark/light mode toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
         
-        // Scroll Progress Bar
-        window.addEventListener('scroll', () => {
-            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollProgress = (scrollTop / scrollHeight) * 100;
-            document.querySelector('.progress-bar').style.width = scrollProgress + '%';
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            html.classList.toggle('light');
+            
+            // Save preference to localStorage
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
         });
         
-        // Scroll Animation
-        const animateElements = document.querySelectorAll('.animate-in');
+        // Check for saved preference
+        if (localStorage.getItem('darkMode') === 'false') {
+            html.classList.remove('dark');
+            html.classList.add('light');
+        }
+
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
         
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('opacity-0');
+            mobileMenu.classList.toggle('pointer-events-none');
+            mobileMenu.classList.toggle('translate-y-10');
+            menuToggle.querySelector('.hamburger').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenu.classList.add('pointer-events-none');
+                mobileMenu.classList.add('translate-y-10');
+                menuToggle.querySelector('.hamburger').classList.remove('active');
             });
-        }, { threshold: 0.1 });
-        
-        animateElements.forEach(el => {
-            observer.observe(el);
         });
-        
-        // Smooth Scrolling for Navigation
+
+        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
+                if (targetId === '#') return;
                 
+                const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     window.scrollTo({
                         top: targetElement.offsetTop - 80,
@@ -1058,111 +845,299 @@
                 }
             });
         });
+
+        // Project modal
+        const projectButtons = document.querySelectorAll('.view-project');
+        const projectModal = document.getElementById('project-modal');
+        const closeModal = document.getElementById('close-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
         
-        // Quiz Functionality
-        const quizContainer = document.getElementById('quiz-container');
-        const quizQuestions = document.querySelectorAll('.quiz-question');
-        const quizOptions = document.querySelectorAll('.quiz-option');
-        const currentQuestionDisplay = document.getElementById('current-question');
-        const correctAnswersDisplay = document.getElementById('correct-answers');
-        const quizProgress = document.querySelector('#quiz-progress .rounded-full div');
-        const quizResult = document.getElementById('quiz-result');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const retryQuizBtn = document.getElementById('retry-quiz');
-        const badgeIcons = document.querySelectorAll('.badge-icon');
-        
-        let currentQuestion = 0;
-        let correctAnswers = 0;
-        
-        function showQuestion(index) {
-            quizQuestions.forEach((question, i) => {
-                question.classList.toggle('hidden', i !== index);
-                question.classList.toggle('active', i === index);
-            });
-            
-            currentQuestionDisplay.textContent = index + 1;
-            quizProgress.style.width = `${(index / (quizQuestions.length - 1)) * 100}%`;
-        }
-        
-        quizOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const isCorrect = this.getAttribute('data-correct') === 'true';
+        projectButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const projectId = button.getAttribute('data-project');
                 
-                if (isCorrect) {
-                    this.classList.add('correct');
-                    correctAnswers++;
-                    correctAnswersDisplay.textContent = correctAnswers;
-                } else {
-                    this.classList.add('incorrect');
-                    // Highlight the correct answer
-                    const correctOption = this.parentElement.querySelector('[data-correct="true"]');
-                    correctOption.classList.add('correct');
+                // In a real implementation, you would fetch project data based on the ID
+                // For this demo, we'll use placeholder content
+                const projects = {
+                    '1': {
+                        title: 'Virtual Museum',
+                        description: 'This immersive virtual museum experience allows visitors to explore exhibits from anywhere in the world. Our team created highly detailed 3D scans of artifacts and built interactive information points throughout the space. The project utilized WebGL and Three.js for smooth performance across devices.',
+                        image: 'bg-gradient-to-br from-yellow-500 to-red-600'
+                    },
+                    '2': {
+                        title: 'Augmented Reality App',
+                        description: 'Our AR application brings 3D models into the real world with remarkable accuracy. Users can place furniture, artwork, or products in their space to visualize how they would look before purchasing. The app features realistic lighting and shadows that adapt to the environment.',
+                        image: 'bg-gradient-to-br from-purple-500 to-blue-600'
+                    },
+                    '3': {
+                        title: '3D Product Configurator',
+                        description: 'This interactive product configurator allows customers to customize products in real-time with various colors, materials, and features. The high-fidelity 3D rendering shows accurate material properties and lighting conditions. The tool increased conversion rates by 35% for our client.',
+                        image: 'bg-gradient-to-br from-green-500 to-teal-600'
+                    }
+                };
+                
+                const project = projects[projectId];
+                
+                modalImage.className = `h-96 ${project.image} flex items-center justify-center`;
+                modalTitle.textContent = project.title;
+                modalDescription.textContent = project.description;
+                
+                projectModal.classList.remove('opacity-0');
+                projectModal.classList.remove('invisible');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closeModal.addEventListener('click', () => {
+            projectModal.classList.add('opacity-0');
+            projectModal.classList.add('invisible');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Quiz functionality
+        const quizData = [
+            {
+                question: "What does the term 'polygon count' refer to in 3D modeling?",
+                options: [
+                    "The number of polygons in a 3D model",
+                    "The color palette used for textures",
+                    "The resolution of the final render",
+                    "The animation frame rate"
+                ],
+                answer: 0
+            },
+            {
+                question: "Which of these is NOT a common 3D file format?",
+                options: [
+                    "OBJ",
+                    "FBX",
+                    "STL",
+                    "JPG"
+                ],
+                answer: 3
+            },
+            {
+                question: "What is the purpose of UV mapping in 3D modeling?",
+                options: [
+                    "To create realistic lighting effects",
+                    "To apply 2D textures to 3D surfaces",
+                    "To animate character movements",
+                    "To optimize polygon count"
+                ],
+                answer: 1
+            },
+            {
+                question: "Which technique is used to create the illusion of detail without adding polygons?",
+                options: [
+                    "Ray tracing",
+                    "Normal mapping",
+                    "Keyframe animation",
+                    "Boolean operations"
+                ],
+                answer: 1
+            },
+            {
+                question: "What does 'PBR' stand for in 3D rendering?",
+                options: [
+                    "Polygon-Based Rendering",
+                    "Physically Based Rendering",
+                    "Pixel Buffer Resolution",
+                    "Primary Bounce Reflection"
+                ],
+                answer: 1
+            },
+            {
+                question: "Which of these is a common method for creating organic 3D shapes?",
+                options: [
+                    "Extrusion",
+                    "Subdivision surface modeling",
+                    "Lathe modeling",
+                    "All of the above"
+                ],
+                answer: 3
+            },
+            {
+                question: "What is the primary purpose of a 3D rig?",
+                options: [
+                    "To add textures to a model",
+                    "To prepare a model for animation",
+                    "To reduce polygon count",
+                    "To create lighting effects"
+                ],
+                answer: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionDisplay = document.getElementById('current-question');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const nextButton = document.getElementById('next-question');
+        const prevButton = document.getElementById('prev-question');
+        const quizResults = document.getElementById('quiz-results');
+        const finalScore = document.getElementById('final-score');
+        const finalProgress = document.getElementById('final-progress');
+        const resultMessage = document.getElementById('result-message');
+        const closeResults = document.getElementById('close-results');
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+
+        function loadQuestion() {
+            const quiz = quizData[currentQuestion];
+            questionText.textContent = quiz.question;
+            
+            optionsContainer.innerHTML = '';
+            quiz.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = `quiz-option p-4 border-2 ${userAnswers[currentQuestion] === index ? 
+                    (index === quiz.answer ? 'border-green-500' : 'border-red-500') : 
+                    'border-gray-200 dark:border-gray-600'} rounded-lg cursor-pointer transition-colors`;
+                optionElement.textContent = option;
+                
+                if (userAnswers[currentQuestion] !== null) {
+                    optionElement.classList.add(index === quiz.answer ? 'bg-green-500 bg-opacity-10' : 
+                        (userAnswers[currentQuestion] === index ? 'bg-red-500 bg-opacity-10' : ''));
                 }
                 
-                // Disable all options after selection
-                const options = this.parentElement.querySelectorAll('.quiz-option');
-                options.forEach(opt => {
-                    opt.style.pointerEvents = 'none';
-                });
-                
-                // Move to next question after delay
-                setTimeout(() => {
-                    if (currentQuestion < quizQuestions.length - 1) {
-                        currentQuestion++;
-                        showQuestion(currentQuestion);
-                    } else {
-                        // Quiz completed
-                        quizContainer.classList.add('hidden');
-                        quizResult.classList.remove('hidden');
-                        finalScoreDisplay.textContent = correctAnswers;
-                        
-                        // Award badges based on performance
-                        if (correctAnswers >= 3) badgeIcons[0].classList.add('badge-earned');
-                        if (correctAnswers >= 4) badgeIcons[1].classList.add('badge-earned');
-                        if (correctAnswers === 5) badgeIcons[2].classList.add('badge-earned');
-                    }
-                }, 1000);
-            });
-        });
-        
-        retryQuizBtn.addEventListener('click', function() {
-            // Reset quiz state
-            currentQuestion = 0;
-            correctAnswers = 0;
-            correctAnswersDisplay.textContent = '0';
-            quizProgress.style.width = '0%';
-            
-            // Reset all options
-            quizOptions.forEach(option => {
-                option.classList.remove('correct', 'incorrect');
-                option.style.pointerEvents = 'auto';
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
             });
             
-            // Hide result and show quiz
-            quizResult.classList.add('hidden');
-            quizContainer.classList.remove('hidden');
-            showQuestion(0);
+            currentQuestionDisplay.textContent = currentQuestion + 1;
+            progressBar.style.width = `${(currentQuestion / quizData.length) * 100}%`;
             
-            // Reset badges
-            badgeIcons.forEach(icon => icon.classList.remove('badge-earned'));
-        });
-        
-        // Initialize 3D Model (placeholder - would be implemented with Three.js)
-        function init3DModel() {
-            // This is a placeholder - in a real implementation, you would:
-            // 1. Set up Three.js scene, camera, renderer
-            // 2. Load 3D model (GLTF/GLB format)
-            // 3. Add lighting
-            // 4. Set up OrbitControls for interaction
-            // 5. Add animation loop
-            
-            console.log('3D model would be initialized here with Three.js');
+            prevButton.disabled = currentQuestion === 0;
+            nextButton.textContent = currentQuestion === quizData.length - 1 ? 'See Results' : 'Next Question';
         }
+
+        function selectOption(index) {
+            if (userAnswers[currentQuestion] !== null) return;
+            
+            const quiz = quizData[currentQuestion];
+            userAnswers[currentQuestion] = index;
+            
+            if (index === quiz.answer) {
+                score++;
+                scoreDisplay.textContent = score;
+            }
+            
+            const options = optionsContainer.querySelectorAll('.quiz-option');
+            options.forEach((option, i) => {
+                if (i === quiz.answer) {
+                    option.classList.add('border-green-500');
+                    option.classList.add('bg-green-500', 'bg-opacity-10');
+                } else if (i === index && i !== quiz.answer) {
+                    option.classList.add('border-red-500');
+                    option.classList.add('bg-red-500', 'bg-opacity-10');
+                }
+            });
+        }
+
+        function showResults() {
+            finalScore.textContent = score;
+            const percentage = (score / quizData.length) * 100;
+            finalProgress.style.width = `${percentage}%`;
+            
+            let message;
+            if (percentage >= 90) {
+                message = "Expert level! You clearly know your 3D design concepts.";
+            } else if (percentage >= 70) {
+                message = "Great job! You have a solid understanding of 3D design.";
+            } else if (percentage >= 50) {
+                message = "Not bad! You know some 3D design basics.";
+            } else {
+                message = "Keep learning! Check out our resources to improve your 3D design knowledge.";
+            }
+            
+            resultMessage.textContent = message;
+            quizResults.classList.remove('opacity-0');
+            quizResults.classList.remove('invisible');
+            document.body.style.overflow = 'hidden';
+            
+            // Confetti effect
+            if (percentage >= 70) {
+                const confettiSettings = { 
+                    particleCount: 100, 
+                    spread: 70, 
+                    origin: { y: 0.6 } 
+                };
+                
+                // In a real implementation, you would use a confetti library
+                console.log("Confetti would trigger here with score:", percentage);
+            }
+        }
+
+        nextButton.addEventListener('click', () => {
+            if (currentQuestion === quizData.length - 1) {
+                showResults();
+            } else {
+                currentQuestion++;
+                loadQuestion();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        closeResults.addEventListener('click', () => {
+            quizResults.classList.add('opacity-0');
+            quizResults.classList.add('invisible');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Initialize quiz
+        loadQuestion();
+
+        // Contact form
+        const contactForm = document.getElementById('contact-form');
+        const submitText = document.getElementById('submit-text');
+        const submitSpinner = document.getElementById('submit-spinner');
         
-        // Initialize on load
-        window.addEventListener('load', () => {
-            init3DModel();
-            showQuestion(0);
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            submitText.textContent = 'Sending...';
+            submitSpinner.classList.remove('hidden');
+            
+            // Simulate form submission
+            setTimeout(() => {
+                submitText.textContent = 'Message Sent!';
+                submitSpinner.classList.add('hidden');
+                
+                // Reset form
+                setTimeout(() => {
+                    contactForm.reset();
+                    submitText.textContent = 'Send Message';
+                }, 2000);
+            }, 1500);
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
         });
     </script>
 </body>
