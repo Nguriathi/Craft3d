@@ -449,3 +449,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    pannellum.viewer('virtual-tour-viewer', {
+        "default": {
+            "firstScene": "lobby",
+            "sceneFadeDuration": 1000
+        },
+        "scenes": {
+            "lobby": {
+                "title": "Lobby",
+                "panorama": "media/virtualtour/lobby.jpg", // Replace with your PanoVR panorama
+                "hotSpots": [
+                    {
+                        "pitch": 2,
+                        "yaw": 120,
+                        "type": "scene",
+                        "text": "Go to Gallery",
+                        "sceneId": "gallery"
+                    }
+                ]
+            },
+            "gallery": {
+                "title": "Gallery",
+                "panorama": "media/virtualtour/gallery.jpg", // Replace with your PanoVR panorama
+                "hotSpots": [
+                    {
+                        "pitch": 0,
+                        "yaw": -60,
+                        "type": "scene",
+                        "text": "Back to Lobby",
+                        "sceneId": "lobby"
+                    }
+                ]
+            }
+            // Add more scenes as needed
+        }
+    });
+});
+
+// magnetic buttons and cards
+document.querySelectorAll('.magnetic').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
+    const my = ((e.clientY - rect.top) / rect.height - 0.5) * 16;
+    el.style.setProperty('--mx', `${mx}px`);
+    el.style.setProperty('--my', `${my}px`);
+    el.classList.add('active');
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.setProperty('--mx', `0px`);
+    el.style.setProperty('--my', `0px`);
+    el.classList.remove('active');
+  });
+});
+
+
+// Ascroll triggered sections
+function revealOnScroll() {
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    }
+  });
+}
+window.addEventListener('scroll', revealOnScroll);
+window.addEventListener('load', revealOnScroll);
+
+
+// Add to selectOption in main.js
+function selectOption(index, optionElement) {
+  // ...existing code...
+  // Ripple effect
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  const rect = optionElement.getBoundingClientRect();
+  ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+  ripple.style.left = (event ? event.offsetX : rect.width/2) - rect.width/2 + 'px';
+  ripple.style.top = (event ? event.offsetY : rect.height/2) - rect.height/2 + 'px';
+  optionElement.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+
+  if (index === quizData[currentQuestion].answer) {
+    optionElement.classList.add('correct');
+    setTimeout(() => optionElement.classList.remove('correct'), 700);
+  }
+}
