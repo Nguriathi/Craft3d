@@ -6,204 +6,13 @@
     <title>Craft3d | Modern 3D Design Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Pannellum CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Roboto+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-dark: #4a90e2;
-            --primary-light: #ff6b6b;
-            --bg-dark: #121212;
-            --text-dark: #f5f5f5;
-            --bg-light: #f5f5f5;
-            --text-light: #121212;
-        }
-
-        body {
-            font-family: 'Roboto Slab', serif;
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-            transition: background-color 0.3s, color 0.3s;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Raleway', sans-serif;
-            font-weight: 700;
-        }
-
-        /* Scroll progress bar */
-        .progress-container {
-            width: 100%;
-            height: 3px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        .progress-bar {
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-dark), #8a2be2);
-            width: 0%;
-            transition: width 0.1s;
-        }
-
-        .light .progress-bar {
-            background: linear-gradient(90deg, var(--primary-light), #ff8e53);
-        }
-
-        /* Custom cursor */
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: rgba(74, 144, 226, 0.5);
-            pointer-events: none;
-            mix-blend-mode: difference;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.2s, width 0.2s, height 0.2s, background-color 0.2s;
-        }
-
-        .cursor-follower {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid rgba(74, 144, 226, 0.3);
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: transform 0.4s, width 0.4s, height 0.4s;
-        }
-
-        .cursor.active {
-            transform: translate(-50%, -50%) scale(1.5);
-            background-color: rgba(255, 107, 107, 0.8);
-        }
-
-        .cursor-follower.active {
-            transform: translate(-50%, -50%) scale(1.2);
-            border-color: rgba(255, 107, 107, 0.5);
-        }
-
-        .cursor.click {
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-
-        /* Navigation */
-        .nav-item::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background-color: var(--primary-dark);
-            transition: width 0.3s;
-        }
-
-        .light .nav-item::after {
-            background-color: var(--primary-light);
-        }
-
-        .nav-item:hover::after {
-            width: 100%;
-        }
-
-        /* Hero section */
-        .hero-overlay {
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
-        }
-
-        .light .hero-overlay {
-            background: linear-gradient(90deg, rgba(245, 245, 245, 0.7) 0%, rgba(245, 245, 245, 0.3) 100%);
-        }
-
-        /* 3D viewer section */
-        .model-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .model-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        /* Quiz section */
-        .quiz-option {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .quiz-option:hover {
-            transform: translateY(-3px);
-        }
-
-        .quiz-option.correct {
-            animation: correctAnswer 0.5s;
-        }
-
-        .quiz-option.incorrect {
-            animation: incorrectAnswer 0.5s;
-        }
-
-        @keyframes correctAnswer {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes incorrectAnswer {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-
-        /* Project modal */
-        .project-modal {
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        /* Hamburger menu */
-        .hamburger {
-            transition: transform 0.3s;
-        }
-
-        .hamburger.active {
-            transform: rotate(90deg);
-        }
-
-        .mobile-menu {
-            transition: transform 0.3s, opacity 0.3s;
-        }
-
-        /* Dark/light mode toggle */
-        .toggle-ball {
-            transition: transform 0.3s;
-        }
-
-        .light .toggle-ball {
-            transform: translateX(24px);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.6s forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
-    </style>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body class="dark">
     <!-- Scroll progress bar -->
@@ -249,22 +58,24 @@
         </div>
     </nav>
 
-    <!-- Mobile menu -->
-    <div class="mobile-menu fixed inset-0 bg-black/90 dark:bg-black/95 z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transform translate-y-10" id="mobile-menu">
-        <div class="flex flex-col items-center space-y-8">
-            <a href="#home" class="text-2xl text-white animate-fade-in delay-1">Home</a>
-            <a href="#models" class="text-2xl text-white animate-fade-in delay-2">3D Models</a>
-            <a href="#gallery" class="text-2xl text-white animate-fade-in delay-3">360° Gallery</a>
-            <a href="#projects" class="text-2xl text-white animate-fade-in delay-4">Projects</a>
-            <a href="#quiz" class="text-2xl text-white animate-fade-in delay-5">Quiz</a>
-            <a href="#contact" class="text-2xl text-white animate-fade-in delay-6">Contact</a>
-        </div>
-        
-        <div class="absolute bottom-12 flex space-x-6 animate-fade-in delay-7">
-            <a href="#" class="text-white text-xl"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="text-white text-xl"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-white text-xl"><i class="fab fa-dribbble"></i></a>
-            <a href="#" class="text-white text-xl"><i class="fab fa-github"></i></a>
+     <!-- Mobile menu -->
+    <div class="mobile-menu fixed inset-0 z-40 flex flex-col items-center justify-center" id="mobile-menu" aria-hidden="true">
+        <div class="mobile-menu-overlay absolute inset-0 backdrop-blur-lg bg-black/80 opacity-0 pointer-events-none transition-opacity duration-400"></div>
+        <div class="mobile-menu-content relative z-10 flex flex-col items-center justify-center w-full">
+            <nav class="flex flex-col items-center space-y-8">
+                <a href="#home" class="mobile-menu-link text-2xl text-white opacity-0">Home</a>
+                <a href="#models" class="mobile-menu-link text-2xl text-white opacity-0">3D Models</a>
+                <a href="#gallery" class="mobile-menu-link text-2xl text-white opacity-0">360° Gallery</a>
+                <a href="#projects" class="mobile-menu-link text-2xl text-white opacity-0">Projects</a>
+                <a href="#quiz" class="mobile-menu-link text-2xl text-white opacity-0">Quiz</a>
+                <a href="#contact" class="mobile-menu-link text-2xl text-white opacity-0">Contact</a>
+            </nav>
+            <div class="mobile-menu-social absolute bottom-12 left-0 right-0 flex justify-center space-x-6 opacity-0">
+                <a href="#" class="text-white text-xl"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white text-xl"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white text-xl"><i class="fab fa-dribbble"></i></a>
+                <a href="#" class="text-white text-xl"><i class="fab fa-github"></i></a>
+            </div>
         </div>
     </div>
 
@@ -297,7 +108,7 @@
         </div>
 
         <div class="absolute bottom-8 left-0 right-0 flex justify-center animate-fade-in delay-3">
-            <a href="#models" class="text-white animate-bounce">
+            <a href="#projects" class="text-white animate-bounce">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
@@ -305,119 +116,7 @@
         </div>
     </section>
 
-    <!-- 3D Models Section -->
-    <section id="models" class="py-20 bg-gray-900 dark:bg-gray-900">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
-                    Interactive <span class="text-primary-dark dark:text-primary-light">3D Models</span>
-                </h2>
-                <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
-                    Explore our collection of meticulously crafted 3D models. Click to interact with each model.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Model 1 -->
-                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
-                    <div class="h-64 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">3D Model 1</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Abstract Sculpture</h3>
-                        <p class="text-gray-300 dark:text-gray-400 mb-4">
-                            A modern abstract sculpture with fluid forms and dynamic lighting.
-                        </p>
-                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
-                            View in 3D
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Model 2 -->
-                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
-                    <div class="h-64 bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">3D Model 2</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Architectural Design</h3>
-                        <p class="text-gray-300 dark:text-gray-400 mb-4">
-                            Futuristic building concept with parametric design elements.
-                        </p>
-                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
-                            View in 3D
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Model 3 -->
-                <div class="model-card bg-gray-800 dark:bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl">
-                    <div class="h-64 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">3D Model 3</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-2 text-white dark:text-white">Product Visualization</h3>
-                        <p class="text-gray-300 dark:text-gray-400 mb-4">
-                            High-fidelity product render with realistic materials and textures.
-                        </p>
-                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
-                            View in 3D
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 360° Gallery Section -->
-    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-                    Immersive <span class="text-primary-dark dark:text-primary-light">360° Gallery</span>
-                </h2>
-                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                    Explore our environments in full 360 degrees. Click and drag to look around each scene.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Gallery Item 1 -->
-                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
-                    <div class="h-80 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">360° View 1</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Modern Office Space</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">
-                            A sleek, contemporary office environment with panoramic views.
-                        </p>
-                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
-                            Explore Space
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Gallery Item 2 -->
-                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
-                    <div class="h-80 bg-gradient-to-br from-red-400 to-purple-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">360° View 2</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Nature Retreat</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">
-                            A peaceful forest cabin surrounded by nature in all directions.
-                        </p>
-                        <button class="px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all">
-                            Explore Space
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
+     <!-- Projects Section -->
     <section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
@@ -425,7 +124,7 @@
                     Featured <span class="text-primary-dark dark:text-primary-light">Projects</span>
                 </h2>
                 <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
-                    Our most innovative and impactful 3D design projects from around the world.
+                    Our most innovative and impactful 3D design projects.
                 </p>
             </div>
 
@@ -433,14 +132,17 @@
                 <!-- Project 1 -->
                 <div class="group relative overflow-hidden rounded-xl shadow-xl">
                     <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">Project 1</div>
+                        <!-- Replace text with image -->
+                        <img src="Media/images/smartwatch.png" alt="Smart Watch" class="object-cover h-full w-full" />
                     </div>
                     <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2">Virtual Museum</h3>
+                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
                         <p class="text-gray-300 text-center mb-4">
                             An immersive virtual museum experience with interactive exhibits.
                         </p>
-                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="1">
+                        <button 
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
+                            data-video="Media/videos/smartwatch.mp4">
                             View Project
                         </button>
                     </div>
@@ -448,15 +150,18 @@
 
                 <!-- Project 2 -->
                 <div class="group relative overflow-hidden rounded-xl shadow-xl">
-                    <div class="h-64 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">Project 2</div>
+                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
+                        <!-- Replace text with image -->
+                        <img src="Media/images/aman1.jpg" alt="Smart Watch" class="object-cover h-full w-full" />
                     </div>
                     <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2">Augmented Reality App</h3>
+                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
                         <p class="text-gray-300 text-center mb-4">
-                            AR application that brings 3D models into the real world.
+                            An immersive virtual museum experience with interactive exhibits.
                         </p>
-                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="2">
+                        <button 
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
+                            data-video="Media/videos/aman.mp4">
                             View Project
                         </button>
                     </div>
@@ -464,21 +169,22 @@
 
                 <!-- Project 3 -->
                 <div class="group relative overflow-hidden rounded-xl shadow-xl">
-                    <div class="h-64 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
-                        <div class="text-white text-4xl">Project 3</div>
+                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
+                        <!-- Replace text with image -->
+                        <img src="Media/images/1st.jpg" alt="Smart Watch" class="object-cover h-full w-full" />
                     </div>
                     <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2">3D Product Configurator</h3>
+                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
                         <p class="text-gray-300 text-center mb-4">
-                            Interactive product customizer for e-commerce websites.
+                            An immersive virtual museum experience with interactive exhibits.
                         </p>
-                        <button class="view-project px-4 py-2 bg-primary-dark dark:bg-primary-light text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all" data-project="3">
+                        <button 
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
+                            data-video="Media/videos/lifetrons.mp4">
                             View Project
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
     </section>
 
     <!-- Project Modal -->
@@ -514,6 +220,158 @@
         </div>
     </div>
 
+    <!-- Project Video Modal -->
+    <div id="project-video-modal" class="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="relative w-full max-w-2xl mx-4 md:mx-0 rounded-xl overflow-hidden shadow-2xl bg-gray-900 flex flex-col items-center">
+            <!-- Back Arrow Button -->
+            <button id="close-project-video" class="absolute top-4 left-4 text-white text-3xl z-50 hover:text-primary-dark dark:hover:text-primary-light transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span class="hidden md:inline text-lg">Back</span>
+            </button>
+            <div class="w-full flex justify-center items-center p-4">
+                <video id="project-video-player" class="w-full h-auto max-h-[70vh] rounded-lg bg-black" controls>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- 360° Gallery Section -->
+    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+                    Immersive <span class="text-primary-dark dark:text-primary-light">360° Gallery</span>
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                    Explore our environments in full 360 degrees. Click and drag to look around each scene.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Gallery Item 1 -->
+                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
+                    <div class="relative h-80 flex items-center justify-center">
+                        <img src="media/360/balcony.jpg" alt="360° View 1" class="absolute inset-0 w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div class="relative z-10 text-white text-4xl font-bold drop-shadow-lg">360° View 1</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Modern Office Space</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            A sleek, contemporary office environment with panoramic views.
+                        </p>
+                        <button 
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360"
+                            data-img="media/360/balcony.jpg">
+                            Explore
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
+                    <div class="relative h-80 flex items-center justify-center">
+                        <img src="Media/360/bathroom.jpg" alt="360° View 2" class="absolute inset-0 w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div class="relative z-10 text-white text-4xl font-bold drop-shadow-lg">360° View 2</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Nature Retreat</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            A peaceful forest cabin surrounded by nature in all directions.
+                        </p>
+                        <button 
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360"
+                            data-img="Media/360/bathroom.jpg">
+                            Explore
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 360° Viewer Modal -->
+    <div id="pannellum-modal" class="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <button id="close-pannellum" class="absolute top-4 left-4 flex items-center text-white text-3xl z-50 hover:text-primary-dark dark:hover:text-primary-light transition-colors bg-black bg-opacity-40 rounded-full px-3 py-2 shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span class="hidden sm:inline text-lg">Back</span>
+        </button>
+        <div id="pannellum-viewer" class="w-full h-full max-w-5xl max-h-[90vh] rounded-lg overflow-hidden shadow-2xl"></div>
+    </div>
+
+   
+
+
+    <!-- 3D Models Section -->
+    <section id="models" class="py-20 bg-gray-900 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
+                    Interactive 3D Showcase</span>
+                </h2>
+                <p class="text-lg md:text-xl text-gray-300 dark:text-gray-400 max-w-2xl mx-auto">
+                    Explore our latest 3D model with intuitive controls and realistic rendering.
+                </p>
+            </div>
+            <!-- Main Content: Two Columns -->
+            <div class="flex flex-col lg:flex-row gap-12 items-center justify-center">
+                <!-- Left Column: Product Details -->
+                <div class="w-full lg:w-1/2 max-w-lg">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Futuristic Smartwatch</h3>
+                    <p class="text-gray-300 dark:text-gray-400 mb-8">
+                        Our latest wearable technology prototype featuring advanced biometric tracking and holographic display capabilities. The model showcases intricate details of the design and functionality.
+                    </p>
+                    <!-- Feature Cards Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-gray-800 rounded-lg p-4 flex items-center shadow-md">
+                            <span class="text-blue-400 text-xl mr-3"><i class="fas fa-microchip"></i></span>
+                            <div>
+                                <div class="text-white font-semibold">Performance</div>
+                                <div class="text-gray-400 text-xs">Quad-core processor</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-4 flex items-center shadow-md">
+                            <span class="text-purple-400 text-xl mr-3"><i class="fas fa-battery-full"></i></span>
+                            <div>
+                                <div class="text-white font-semibold">Battery</div>
+                                <div class="text-gray-400 text-xs">7-day lifespan</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-4 flex items-center shadow-md">
+                            <span class="text-green-400 text-xl mr-3"><i class="fas fa-heartbeat"></i></span>
+                            <div>
+                                <div class="text-white font-semibold">Health</div>
+                                <div class="text-gray-400 text-xs">12 sensors</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-4 flex items-center shadow-md">
+                            <span class="text-yellow-400 text-xl mr-3"><i class="fas fa-tint"></i></span>
+                            <div>
+                                <div class="text-white font-semibold">Resistance</div>
+                                <div class="text-gray-400 text-xs">50m waterproof</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- Right Column: 3D Model Placeholder -->
+                <div class="w-full lg:w-1/2 flex justify-center">
+                    <div class="w-full h-80 md:h-96 bg-gray-800 rounded-2xl border-2 border-gray-700 shadow-xl flex items-center justify-center">
+                        <div id="threejs-viewer" style="width:100%;height:100%;border-radius:1rem;overflow:hidden;background:#222 url('assets/media/images/rolex.jpg') center/cover no-repeat;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Quiz Section -->
     <section id="quiz" class="py-20 bg-gray-100 dark:bg-gray-800">
         <div class="container mx-auto px-6">
@@ -525,7 +383,6 @@
                     Test your knowledge of 3D design concepts with our interactive quiz.
                 </p>
             </div>
-
             <div class="max-w-3xl mx-auto bg-white dark:bg-gray-700 rounded-xl shadow-xl overflow-hidden">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-600">
                     <div class="flex justify-between items-center mb-4">
@@ -538,12 +395,10 @@
                         <div class="bg-primary-dark dark:bg-primary-light h-2 rounded-full" id="progress-bar" style="width: 0%"></div>
                     </div>
                 </div>
-
                 <div class="p-6">
                     <h4 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white" id="question-text">
                         What does the term "polygon count" refer to in 3D modeling?
                     </h4>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="options-container">
                         <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
                             The number of polygons in a 3D model
@@ -558,15 +413,7 @@
                             The animation frame rate
                         </div>
                     </div>
-
-                    <div class="flex justify-between">
-                        <button class="px-6 py-2 text-gray-500 dark:text-gray-400 font-semibold rounded-lg hover:text-gray-700 dark:hover:text-gray-300 transition-colors" id="prev-question" disabled>
-                            Previous
-                        </button>
-                        <button class="px-6 py-2 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all" id="next-question">
-                            Next Question
-                        </button>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -614,7 +461,6 @@
                     Have a project in mind or want to collaborate? We'd love to hear from you.
                 </p>
             </div>
-
             <div class="max-w-4xl mx-auto bg-gray-800 dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden">
                 <div class="md:flex">
                     <div class="md:w-1/2 bg-gradient-to-br from-blue-500 to-indigo-600 p-8 md:p-12 flex flex-col justify-center">
@@ -743,402 +589,101 @@
         </div>
     </footer>
 
+    <!-- Floating Back-to-Top Arrow -->
+    <a href="#home" id="floating-back-to-hero-arrow"
+   class="fixed bottom-6 right-6 z-50 bg-primary-dark dark:bg-primary-light rounded-full shadow-lg flex items-center justify-center w-14 h-14 transition-transform hover:scale-110 animate-bounce cursor-pointer group visible"
+   aria-label="Back to top">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="h-10 w-10 text-white group-hover:text-primary-light transition-colors transform rotate-180"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+</a>
+
+    <script src="assets/js/main.js"></script>
+    
+   
+
     <script>
-        // Scroll progress bar
-        window.addEventListener('scroll', function() {
-            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollProgress = (scrollTop / scrollHeight) * 100;
-            document.querySelector('.progress-bar').style.width = scrollProgress + '%';
-        });
-
-        // Custom cursor
-        const cursor = document.querySelector('.cursor');
-        const cursorFollower = document.querySelector('.cursor-follower');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            
-            setTimeout(() => {
-                cursorFollower.style.left = e.clientX + 'px';
-                cursorFollower.style.top = e.clientY + 'px';
-            }, 100);
-        });
-        
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('click');
-        });
-        
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('click');
-        });
-        
-        const interactiveElements = document.querySelectorAll('a, button, input, textarea, .model-card, .quiz-option, .view-project');
-        
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.classList.add('active');
-                cursorFollower.classList.add('active');
-            });
-            
-            el.addEventListener('mouseleave', () => {
-                cursor.classList.remove('active');
-                cursorFollower.classList.remove('active');
+    // 360° Modal logic
+    document.querySelectorAll('.open-360').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = document.getElementById('pannellum-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            // Init pannellum
+            pannellum.viewer('pannellum-viewer', {
+                type: 'equirectangular',
+                panorama: this.dataset.img,
+                autoLoad: true,
+                showZoomCtrl: true,
+                showFullscreenCtrl: true,
+                compass: false
             });
         });
+    });
+    document.getElementById('close-pannellum').addEventListener('click', function() {
+        const modal = document.getElementById('pannellum-modal');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+        // Remove pannellum instance
+        document.getElementById('pannellum-viewer').innerHTML = '';
+    });
 
-        // Dark/light mode toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            html.classList.toggle('light');
-            
-            // Save preference to localStorage
-            const isDark = html.classList.contains('dark');
-            localStorage.setItem('darkMode', isDark);
+    // Project Video Modal logic
+    document.querySelectorAll('.open-project-video').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = document.getElementById('project-video-modal');
+            const video = document.getElementById('project-video-player');
+            video.querySelector('source').src = this.dataset.video;
+            video.load();
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            video.play(); // <-- Add this line for autoplay
         });
-        
-        // Check for saved preference
-        if (localStorage.getItem('darkMode') === 'false') {
-            html.classList.remove('dark');
-            html.classList.add('light');
-        }
-
-        // Mobile menu toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('opacity-0');
-            mobileMenu.classList.toggle('pointer-events-none');
-            mobileMenu.classList.toggle('translate-y-10');
-            menuToggle.querySelector('.hamburger').classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('opacity-0');
-                mobileMenu.classList.add('pointer-events-none');
-                mobileMenu.classList.add('translate-y-10');
-                menuToggle.querySelector('.hamburger').classList.remove('active');
-            });
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // Project modal
-        const projectButtons = document.querySelectorAll('.view-project');
-        const projectModal = document.getElementById('project-modal');
-        const closeModal = document.getElementById('close-modal');
-        const modalImage = document.getElementById('modal-image');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDescription = document.getElementById('modal-description');
-        
-        projectButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const projectId = button.getAttribute('data-project');
-                
-                // In a real implementation, you would fetch project data based on the ID
-                // For this demo, we'll use placeholder content
-                const projects = {
-                    '1': {
-                        title: 'Virtual Museum',
-                        description: 'This immersive virtual museum experience allows visitors to explore exhibits from anywhere in the world. Our team created highly detailed 3D scans of artifacts and built interactive information points throughout the space. The project utilized WebGL and Three.js for smooth performance across devices.',
-                        image: 'bg-gradient-to-br from-yellow-500 to-red-600'
-                    },
-                    '2': {
-                        title: 'Augmented Reality App',
-                        description: 'Our AR application brings 3D models into the real world with remarkable accuracy. Users can place furniture, artwork, or products in their space to visualize how they would look before purchasing. The app features realistic lighting and shadows that adapt to the environment.',
-                        image: 'bg-gradient-to-br from-purple-500 to-blue-600'
-                    },
-                    '3': {
-                        title: '3D Product Configurator',
-                        description: 'This interactive product configurator allows customers to customize products in real-time with various colors, materials, and features. The high-fidelity 3D rendering shows accurate material properties and lighting conditions. The tool increased conversion rates by 35% for our client.',
-                        image: 'bg-gradient-to-br from-green-500 to-teal-600'
-                    }
-                };
-                
-                const project = projects[projectId];
-                
-                modalImage.className = `h-96 ${project.image} flex items-center justify-center`;
-                modalTitle.textContent = project.title;
-                modalDescription.textContent = project.description;
-                
-                projectModal.classList.remove('opacity-0');
-                projectModal.classList.remove('invisible');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-        
-        closeModal.addEventListener('click', () => {
-            projectModal.classList.add('opacity-0');
-            projectModal.classList.add('invisible');
-            document.body.style.overflow = 'auto';
-        });
-
-        // Quiz functionality
-        const quizData = [
-            {
-                question: "What does the term 'polygon count' refer to in 3D modeling?",
-                options: [
-                    "The number of polygons in a 3D model",
-                    "The color palette used for textures",
-                    "The resolution of the final render",
-                    "The animation frame rate"
-                ],
-                answer: 0
-            },
-            {
-                question: "Which of these is NOT a common 3D file format?",
-                options: [
-                    "OBJ",
-                    "FBX",
-                    "STL",
-                    "JPG"
-                ],
-                answer: 3
-            },
-            {
-                question: "What is the purpose of UV mapping in 3D modeling?",
-                options: [
-                    "To create realistic lighting effects",
-                    "To apply 2D textures to 3D surfaces",
-                    "To animate character movements",
-                    "To optimize polygon count"
-                ],
-                answer: 1
-            },
-            {
-                question: "Which technique is used to create the illusion of detail without adding polygons?",
-                options: [
-                    "Ray tracing",
-                    "Normal mapping",
-                    "Keyframe animation",
-                    "Boolean operations"
-                ],
-                answer: 1
-            },
-            {
-                question: "What does 'PBR' stand for in 3D rendering?",
-                options: [
-                    "Polygon-Based Rendering",
-                    "Physically Based Rendering",
-                    "Pixel Buffer Resolution",
-                    "Primary Bounce Reflection"
-                ],
-                answer: 1
-            },
-            {
-                question: "Which of these is a common method for creating organic 3D shapes?",
-                options: [
-                    "Extrusion",
-                    "Subdivision surface modeling",
-                    "Lathe modeling",
-                    "All of the above"
-                ],
-                answer: 3
-            },
-            {
-                question: "What is the primary purpose of a 3D rig?",
-                options: [
-                    "To add textures to a model",
-                    "To prepare a model for animation",
-                    "To reduce polygon count",
-                    "To create lighting effects"
-                ],
-                answer: 1
-            }
-        ];
-
-        const quizContainer = document.getElementById('quiz');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const currentQuestionDisplay = document.getElementById('current-question');
-        const scoreDisplay = document.getElementById('score');
-        const progressBar = document.getElementById('progress-bar');
-        const nextButton = document.getElementById('next-question');
-        const prevButton = document.getElementById('prev-question');
-        const quizResults = document.getElementById('quiz-results');
-        const finalScore = document.getElementById('final-score');
-        const finalProgress = document.getElementById('final-progress');
-        const resultMessage = document.getElementById('result-message');
-        const closeResults = document.getElementById('close-results');
-
-        let currentQuestion = 0;
-        let score = 0;
-        let userAnswers = new Array(quizData.length).fill(null);
-
-        function loadQuestion() {
-            const quiz = quizData[currentQuestion];
-            questionText.textContent = quiz.question;
-            
-            optionsContainer.innerHTML = '';
-            quiz.options.forEach((option, index) => {
-                const optionElement = document.createElement('div');
-                optionElement.className = `quiz-option p-4 border-2 ${userAnswers[currentQuestion] === index ? 
-                    (index === quiz.answer ? 'border-green-500' : 'border-red-500') : 
-                    'border-gray-200 dark:border-gray-600'} rounded-lg cursor-pointer transition-colors`;
-                optionElement.textContent = option;
-                
-                if (userAnswers[currentQuestion] !== null) {
-                    optionElement.classList.add(index === quiz.answer ? 'bg-green-500 bg-opacity-10' : 
-                        (userAnswers[currentQuestion] === index ? 'bg-red-500 bg-opacity-10' : ''));
-                }
-                
-                optionElement.addEventListener('click', () => selectOption(index));
-                optionsContainer.appendChild(optionElement);
-            });
-            
-            currentQuestionDisplay.textContent = currentQuestion + 1;
-            progressBar.style.width = `${(currentQuestion / quizData.length) * 100}%`;
-            
-            prevButton.disabled = currentQuestion === 0;
-            nextButton.textContent = currentQuestion === quizData.length - 1 ? 'See Results' : 'Next Question';
-        }
-
-        function selectOption(index) {
-            if (userAnswers[currentQuestion] !== null) return;
-            
-            const quiz = quizData[currentQuestion];
-            userAnswers[currentQuestion] = index;
-            
-            if (index === quiz.answer) {
-                score++;
-                scoreDisplay.textContent = score;
-            }
-            
-            const options = optionsContainer.querySelectorAll('.quiz-option');
-            options.forEach((option, i) => {
-                if (i === quiz.answer) {
-                    option.classList.add('border-green-500');
-                    option.classList.add('bg-green-500', 'bg-opacity-10');
-                } else if (i === index && i !== quiz.answer) {
-                    option.classList.add('border-red-500');
-                    option.classList.add('bg-red-500', 'bg-opacity-10');
-                }
-            });
-        }
-
-        function showResults() {
-            finalScore.textContent = score;
-            const percentage = (score / quizData.length) * 100;
-            finalProgress.style.width = `${percentage}%`;
-            
-            let message;
-            if (percentage >= 90) {
-                message = "Expert level! You clearly know your 3D design concepts.";
-            } else if (percentage >= 70) {
-                message = "Great job! You have a solid understanding of 3D design.";
-            } else if (percentage >= 50) {
-                message = "Not bad! You know some 3D design basics.";
-            } else {
-                message = "Keep learning! Check out our resources to improve your 3D design knowledge.";
-            }
-            
-            resultMessage.textContent = message;
-            quizResults.classList.remove('opacity-0');
-            quizResults.classList.remove('invisible');
-            document.body.style.overflow = 'hidden';
-            
-            // Confetti effect
-            if (percentage >= 70) {
-                const confettiSettings = { 
-                    particleCount: 100, 
-                    spread: 70, 
-                    origin: { y: 0.6 } 
-                };
-                
-                // In a real implementation, you would use a confetti library
-                console.log("Confetti would trigger here with score:", percentage);
-            }
-        }
-
-        nextButton.addEventListener('click', () => {
-            if (currentQuestion === quizData.length - 1) {
-                showResults();
-            } else {
-                currentQuestion++;
-                loadQuestion();
-            }
-        });
-
-        prevButton.addEventListener('click', () => {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                loadQuestion();
-            }
-        });
-
-        closeResults.addEventListener('click', () => {
-            quizResults.classList.add('opacity-0');
-            quizResults.classList.add('invisible');
-            document.body.style.overflow = 'auto';
-        });
-
-        // Initialize quiz
-        loadQuestion();
-
-        // Contact form
-        const contactForm = document.getElementById('contact-form');
-        const submitText = document.getElementById('submit-text');
-        const submitSpinner = document.getElementById('submit-spinner');
-        
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            submitText.textContent = 'Sending...';
-            submitSpinner.classList.remove('hidden');
-            
-            // Simulate form submission
-            setTimeout(() => {
-                submitText.textContent = 'Message Sent!';
-                submitSpinner.classList.add('hidden');
-                
-                // Reset form
-                setTimeout(() => {
-                    contactForm.reset();
-                    submitText.textContent = 'Send Message';
-                }, 2000);
-            }, 1500);
-        });
-
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-fade-in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('section').forEach(section => {
-            observer.observe(section);
-        });
+    });
+    document.getElementById('close-project-video').addEventListener('click', function() {
+        const modal = document.getElementById('project-video-modal');
+        const video = document.getElementById('project-video-player');
+        video.pause();
+        video.currentTime = 0;
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+    });
     </script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const arrow = document.getElementById('floating-back-to-hero-arrow');
+    const gallery = document.getElementById('gallery');
+    const footer = document.querySelector('footer');
+
+    function updateArrow() {
+        const galleryBottom = gallery.getBoundingClientRect().bottom + window.scrollY;
+        const footerRect = footer.getBoundingClientRect();
+        const windowBottom = window.scrollY + window.innerHeight;
+        const overlap = windowBottom - (footer.offsetTop);
+
+        // Show/hide arrow after gallery
+        if (window.scrollY > galleryBottom - window.innerHeight * 0.5) {
+            arrow.classList.add('visible');
+        } else {
+            arrow.classList.remove('visible');
+        }
+
+        // Move arrow up if overlapping footer
+        if (overlap > 0) {
+            arrow.style.transform = `translateY(-${overlap + 24}px)`; // 24px = bottom-6
+        } else {
+            arrow.style.transform = 'translateY(0)';
+        }
+    }
+
+    window.addEventListener('scroll', updateArrow);
+    window.addEventListener('resize', updateArrow);
+    updateArrow();
+});
+</script>
 </body>
 </html>
