@@ -1,0 +1,325 @@
+:root {
+    --primary-dark: #4a90e2;
+    --primary-light: #ff6b6b;
+    --bg-dark: #121212;
+    --text-dark: #f5f5f5;
+    --bg-light: #f5f5f5;
+    --text-light: #121212;
+}
+
+body {
+    font-family: 'Roboto Slab', serif;
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+    transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+}
+
+/* Scroll progress bar */
+.progress-container {
+    width: 100%;
+    height: 3px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-dark), #8a2be2);
+    width: 0%;
+    transition: width 0.1s;
+}
+
+.light .progress-bar {
+    background: linear-gradient(90deg, var(--primary-light), #ff8e53);
+}
+
+/* Custom cursor */
+.cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(74, 144, 226, 0.5);
+    pointer-events: none;
+    mix-blend-mode: difference;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s, width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+.cursor-follower {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.4s, width 0.4s, height 0.4s;
+}
+
+.cursor.active {
+    transform: translate(-50%, -50%) scale(1.5);
+    background-color: rgba(255, 107, 107, 0.8);
+}
+
+.cursor-follower.active {
+    transform: translate(-50%, -50%) scale(1.2);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.cursor.click {
+    transform: translate(-50%, -50%) scale(0.8);
+}
+
+/* Navigation */
+.nav-item::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--primary-dark);
+    transition: width 0.3s;
+}
+
+.light .nav-item::after {
+    background-color: var(--primary-light);
+}
+
+.nav-item:hover::after {
+    width: 100%;
+}
+
+/* Hero section */
+.hero-overlay {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.light .hero-overlay {
+    background: linear-gradient(90deg, rgba(245, 245, 245, 0.7) 0%, rgba(245, 245, 245, 0.3) 100%);
+}
+
+/* 3D viewer section */
+.model-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.model-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+
+/* Quiz section */
+.quiz-option {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quiz-option:hover {
+    transform: translateY(-3px);
+}
+
+.quiz-option.correct {
+    animation: correctAnswer 0.5s;
+}
+
+.quiz-option.incorrect {
+    animation: incorrectAnswer 0.5s;
+}
+
+@keyframes correctAnswer {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes incorrectAnswer {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* Project modal */
+.project-modal {
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* Hamburger menu */
+.hamburger {
+    transition: transform 0.3s;
+}
+
+.hamburger.active {
+    transform: rotate(90deg);
+}
+
+/* ========== Enhanced Mobile Menu Overlay ========== */
+.mobile-menu {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity;
+}
+.mobile-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.mobile-menu-overlay {
+    /* Already styled in HTML for backdrop-blur and bg */
+    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity;
+}
+.mobile-menu.active .mobile-menu-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+.mobile-menu-content {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Staggered fade-in for menu links */
+.mobile-menu-link {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity 0.45s cubic-bezier(0.4,0,0.2,1),
+        transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity, transform;
+}
+.mobile-menu-link.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered fade-in for social icons group */
+.mobile-menu-social {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity 0.45s cubic-bezier(0.4,0,0.2,1),
+        transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity, transform;
+}
+.mobile-menu-social.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Dark/light mode toggle */
+.toggle-ball {
+    transition: transform 0.3s;
+}
+
+.light .toggle-ball {
+    transform: translateX(24px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s forwards;
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* Animated floating arrow styles */
+.floating-arrow {
+    position: fixed;
+    right: 2rem;
+    bottom: 4rem;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    /* Optionally add a drop shadow */
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,0.25));
+}
+.floating-arrow.visible {
+    opacity: 1;
+    pointer-events: auto;
+    animation: floatUpDown 2s infinite;
+}
+.floating-arrow:hover .arrow-svg {
+    color: var(--primary-dark);
+    transform: scale(1.15);
+}
+.arrow-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+    border-radius: 9999px;
+    padding: 0.75rem;
+    transition: background 0.3s;
+    box-shadow: 0 6px 32px 0 rgba(74, 144, 226, 0.16);
+}
+.arrow-svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #fff;
+    transition: color 0.3s, transform 0.3s;
+    will-change: transform;
+}
+@keyframes floatUpDown {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+    100% { transform: translateY(0); }
+}
+@media (max-width: 640px) {
+    .floating-arrow {
+        right: 1rem;
+        bottom: 1.5rem;
+    }
+    .arrow-inner {
+        padding: 0.5rem;
+    }
+    .arrow-svg {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+/* Floating back-to-top arrow styles */
+#floating-back-to-hero-arrow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+#floating-back-to-hero-arrow.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+#floating-back-to-hero-arrow .arrow-svg {
+  transition: color 0.3s;
+}
+
