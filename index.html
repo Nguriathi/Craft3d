@@ -13,8 +13,159 @@
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Roboto+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <!-- AOS Animate On Scroll CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <style>
+    /* Scroll storytelling reveal animation */
+    .story-reveal {
+      opacity: 0;
+      transform: translateY(60px) scale(0.98);
+      transition:
+        opacity 0.9s cubic-bezier(.22,1,.36,1),
+        transform 0.9s cubic-bezier(.22,1,.36,1);
+      will-change: opacity, transform;
+    }
+    .story-reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .story-reveal,
+      .story-reveal.visible {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* Floating section nav styles */
+    #floating-section-nav {
+      position: fixed;
+      top: 50%;
+      left: 32px;
+      z-index: 50;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      pointer-events: none;
+    }
+    .floating-section-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #d1d5db;
+      border: 2px solid #6366f1;
+      opacity: 0.5;
+      transition: background 0.3s, opacity 0.3s, border-color 0.3s, transform 0.3s;
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+    }
+    .floating-section-dot.active {
+      background: #6366f1;
+      opacity: 1;
+      border-color: #fff;
+      transform: scale(1.2);
+    }
+    .floating-section-dot:hover::after,
+    .floating-section-dot.active::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #222;
+      color: #fff;
+      font-size: 0.95rem;
+      padding: 4px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0.95;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @media (max-width: 1023px) {
+      #floating-section-nav { display: none; }
+    }
+
+    /* High Contrast Mode */
+    body.high-contrast,
+    body.high-contrast .dark {
+      background: #000 !important;
+      color: #fff !important;
+    }
+    body.high-contrast a,
+    body.high-contrast .nav-item,
+    body.high-contrast .mobile-menu-link,
+    body.high-contrast .floating-section-dot,
+    body.high-contrast .quiz-option,
+    body.high-contrast .magnetic,
+    body.high-contrast .reveal {
+      color: #fff !important;
+      background: #000 !important;
+      border-color: #fff !important;
+    }
+    body.high-contrast .bg-primary-dark,
+    body.high-contrast .dark\:bg-primary-light,
+    body.high-contrast .bg-gray-900,
+    body.high-contrast .bg-gray-800,
+    body.high-contrast .bg-gray-700,
+    body.high-contrast .bg-gray-100,
+    body.high-contrast .bg-white,
+    body.high-contrast .bg-gray-200,
+    body.high-contrast .bg-gray-600 {
+      background: #000 !important;
+    }
+    body.high-contrast .text-gray-900,
+    body.high-contrast .text-gray-800,
+    body.high-contrast .text-gray-700,
+    body.high-contrast .text-gray-600,
+    body.high-contrast .text-gray-400,
+    body.high-contrast .text-gray-300,
+    body.high-contrast .text-gray-200,
+    body.high-contrast .text-gray-100,
+    body.high-contrast .text-primary-dark,
+    body.high-contrast .dark\:text-primary-light {
+      color: #fff !important;
+    }
+    body.high-contrast .border-gray-200,
+    body.high-contrast .border-gray-300,
+    body.high-contrast .border-gray-400,
+    body.high-contrast .border-gray-600,
+    body.high-contrast .border-gray-700,
+    body.high-contrast .border-gray-800 {
+      border-color: #fff !important;
+    }
+    body.high-contrast .floating-section-dot.active {
+      background: #fff !important;
+      border-color: #000 !important;
+    }
+    body.high-contrast .floating-section-dot {
+      background: #fff !important;
+      border-color: #fff !important;
+    }
+    body.high-contrast .floating-section-dot:hover::after,
+    body.high-contrast .floating-section-dot.active::after {
+      background: #000 !important;
+      color: #fff !important;
+    }
+    body.high-contrast .progress-bar {
+      background: #fff !important;
+    }
+    body.high-contrast .cursor,
+    body.high-contrast .cursor-follower {
+      background: #fff !important;
+    }
+    </style>
 </head>
 <body class="dark">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#home" class="sr-only focus:not-sr-only absolute top-2 left-2 bg-primary-dark text-white px-4 py-2 rounded z-50" tabindex="0">Skip to main content</a>
+
     <!-- Scroll progress bar -->
     <div class="progress-container">
         <div class="progress-bar"></div>
@@ -25,29 +176,28 @@
     <div class="cursor-follower"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-3 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
+    <nav class="fixed top-3 left-0 right-0 z-50 max-w-7xl mx-auto px-6" aria-label="Main navigation">
         <div class="flex justify-between items-center py-4 px-6 bg-white/10 dark:bg-black/10 backdrop-blur-md rounded-full shadow-lg">
-            <a href="#" class="text-2xl font-bold text-white dark:text-white">
+            <a href="#" class="text-2xl font-bold text-white dark:text-white" aria-label="Craft3d Home">
                 <span class="text-primary-dark dark:text-primary-light">Craft</span>3d
             </a>
 
             <div class="hidden md:flex space-x-8">
-                <a href="#home" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Home</a>
-                <a href="#models" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">3D Models</a>
-                <a href="#gallery" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">360° Gallery</a>
-                <a href="#projects" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Projects</a>
-                <a href="#quiz" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Quiz</a>
-                <a href="#contact" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light">Contact</a>
+                <a href="#home" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to Home" tabindex="0">Home</a>
+                <a href="#models" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to 3D Models" tabindex="0">3D Models</a>
+                <a href="#gallery" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to 360° Gallery" tabindex="0">360° Gallery</a>
+                <a href="#projects" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to Projects" tabindex="0">Projects</a>
+                <a href="#quiz" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to Quiz" tabindex="0">Quiz</a>
+                <a href="#contact" class="nav-item relative text-white dark:text-white hover:text-primary-dark dark:hover:text-primary-light" aria-label="Go to Contact" tabindex="0">Contact</a>
             </div>
 
             <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <div class="w-12 h-6 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer" id="theme-toggle">
+                <div class="relative" aria-label="Toggle theme">
+                    <div class="w-12 h-6 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer" id="theme-toggle" tabindex="0" aria-label="Toggle dark mode">
                         <div class="toggle-ball w-5 h-5 bg-white dark:bg-gray-300 rounded-full shadow-md"></div>
                     </div>
                 </div>
-
-                <button class="md:hidden text-white dark:text-white focus:outline-none" id="menu-toggle">
+                <button class="md:hidden text-white dark:text-white focus:outline-none" id="menu-toggle" aria-label="Open mobile menu" tabindex="0">
                     <div class="hamburger">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -62,53 +212,53 @@
     <div class="mobile-menu fixed inset-0 z-40 flex flex-col items-center justify-center" id="mobile-menu" aria-hidden="true">
         <div class="mobile-menu-overlay absolute inset-0 backdrop-blur-lg bg-black/80 opacity-0 pointer-events-none transition-opacity duration-400"></div>
         <div class="mobile-menu-content relative z-10 flex flex-col items-center justify-center w-full">
-            <nav class="flex flex-col items-center space-y-8">
-                <a href="#home" class="mobile-menu-link text-2xl text-white opacity-0">Home</a>
-                <a href="#models" class="mobile-menu-link text-2xl text-white opacity-0">3D Models</a>
-                <a href="#gallery" class="mobile-menu-link text-2xl text-white opacity-0">360° Gallery</a>
-                <a href="#projects" class="mobile-menu-link text-2xl text-white opacity-0">Projects</a>
-                <a href="#quiz" class="mobile-menu-link text-2xl text-white opacity-0">Quiz</a>
-                <a href="#contact" class="mobile-menu-link text-2xl text-white opacity-0">Contact</a>
+            <nav class="flex flex-col items-center space-y-8" aria-label="Mobile navigation">
+                <a href="#home" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to Home" tabindex="0">Home</a>
+                <a href="#models" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to 3D Models" tabindex="0">3D Models</a>
+                <a href="#gallery" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to 360° Gallery" tabindex="0">360° Gallery</a>
+                <a href="#projects" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to Projects" tabindex="0">Projects</a>
+                <a href="#quiz" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to Quiz" tabindex="0">Quiz</a>
+                <a href="#contact" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to Contact" tabindex="0">Contact</a>
             </nav>
             <div class="mobile-menu-social absolute bottom-12 left-0 right-0 flex justify-center space-x-6 opacity-0">
-                <a href="#" class="text-white text-xl"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-white text-xl"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="text-white text-xl"><i class="fab fa-dribbble"></i></a>
-                <a href="#" class="text-white text-xl"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-white text-xl" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white text-xl" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white text-xl" aria-label="Dribbble"><i class="fab fa-dribbble"></i></a>
+                <a href="#" class="text-white text-xl" aria-label="GitHub"><i class="fab fa-github"></i></a>
             </div>
         </div>
     </div>
 
     <!-- Hero section -->
-    <section id="home" class="relative h-screen flex items-center overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <video autoplay muted loop class="w-full h-full object-cover">
+    <section id="home" class="relative h-screen flex items-center overflow-hidden" data-aos="fade-up">
+        <div class="absolute inset-0 z-0 story-reveal">
+            <video autoplay muted loop class="w-full h-full object-cover story-reveal">
                 <source src="Media/videos/cups.mp4" type="video/mp4">
             </video>
-            <div class="absolute inset-0 hero-overlay"></div>
+            <div class="absolute inset-0 hero-overlay story-reveal"></div>
         </div>
 
         <div class="relative z-10 container mx-auto px-6">
             <div class="max-w-2xl">
-                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white dark:text-white animate-fade-in">
-                    Crafting the Future of <span class="text-primary-dark dark:text-primary-light">3D Design</span>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white dark:text-white animate-fade-in story-reveal">
+                    Crafting the Future of <span class="text-primary-dark dark:text-primary-light story-reveal">3D Design</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-200 dark:text-gray-300 mb-8 animate-fade-in delay-1">
+                <p class="text-xl md:text-2xl text-gray-200 dark:text-gray-300 mb-8 animate-fade-in delay-1 story-reveal">
                     We create immersive 3D experiences that captivate and inspire. Our studio blends cutting-edge technology with artistic vision.
                 </p>
-                <div class="flex space-x-4 animate-fade-in delay-2">
-                    <a href="#models" class="px-8 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-full hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
+                <div class="flex space-x-4 animate-fade-in delay-2 story-reveal">
+                    <a href="#models" class="px-8 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-full hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg magnetic reveal story-reveal">
                         Explore Models
                     </a>
-                    <a href="#contact" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:bg-opacity-10 transition-all transform hover:-translate-y-1">
+                    <a href="#contact" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:bg-opacity-10 transition-all transform hover:-translate-y-1 magnetic reveal story-reveal">
                         Contact Us
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="absolute bottom-8 left-0 right-0 flex justify-center animate-fade-in delay-3">
-            <a href="#projects" class="text-white animate-bounce">
+        <div class="absolute bottom-8 left-0 right-0 flex justify-center animate-fade-in delay-3 story-reveal">
+            <a href="#projects" class="text-white animate-bounce story-reveal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
@@ -116,76 +266,72 @@
         </div>
     </section>
 
-     <!-- Projects Section -->
-    <section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
-                    Featured <span class="text-primary-dark dark:text-primary-light">Projects</span>
-                </h2>
-                <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
-                    Our most innovative and impactful 3D design projects.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Project 1 -->
-                <div class="group relative overflow-hidden rounded-xl shadow-xl">
-                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-                        <!-- Replace text with image -->
-                        <img src="Media/images/smartwatch.png" alt="Smart Watch" class="object-cover h-full w-full" />
-                    </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
-                        <p class="text-gray-300 text-center mb-4">
-                            An immersive virtual museum experience with interactive exhibits.
-                        </p>
-                        <button 
-                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
-                            data-video="Media/videos/smartwatch.mp4">
-                            View Project
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Project 2 -->
-                <div class="group relative overflow-hidden rounded-xl shadow-xl">
-                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-                        <!-- Replace text with image -->
-                        <img src="Media/images/aman1.jpg" alt="Smart Watch" class="object-cover h-full w-full" />
-                    </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
-                        <p class="text-gray-300 text-center mb-4">
-                            An immersive virtual museum experience with interactive exhibits.
-                        </p>
-                        <button 
-                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
-                            data-video="Media/videos/aman.mp4">
-                            View Project
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Project 3 -->
-                <div class="group relative overflow-hidden rounded-xl shadow-xl">
-                    <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-                        <!-- Replace text with image -->
-                        <img src="Media/images/1st.jpg" alt="Smart Watch" class="object-cover h-full w-full" />
-                    </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2"> Smart Watch</h3>
-                        <p class="text-gray-300 text-center mb-4">
-                            An immersive virtual museum experience with interactive exhibits.
-                        </p>
-                        <button 
-                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video"
-                            data-video="Media/videos/lifetrons.mp4">
-                            View Project
-                        </button>
-                    </div>
-                </div>
-    </section>
+    <!-- Projects Section -->
+<section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900" data-aos="fade-up">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white" data-aos="fade-right">
+        Featured <span class="text-primary-dark dark:text-primary-light">Projects</span>
+      </h2>
+      <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto" data-aos="fade-left" data-aos-delay="200">
+        Our most innovative and impactful 3D design projects.
+      </p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Project 1 -->
+      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic reveal story-reveal">
+        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center story-reveal">
+          <img src="Media/images/smartwatch.png" alt="Smart Watch" class="object-cover h-full w-full story-reveal" />
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 story-reveal">
+          <h3 class="text-2xl font-bold text-white mb-2 story-reveal">Smart Watch</h3>
+          <p class="text-gray-300 text-center mb-4 story-reveal">
+            An immersive virtual museum experience with interactive exhibits.
+          </p>
+          <button 
+            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video story-reveal"
+            data-video="Media/videos/smartwatch.mp4">
+            View Project
+          </button>
+        </div>
+      </div>
+      <!-- Project 2 -->
+      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic reveal story-reveal">
+        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center story-reveal">
+          <img src="Media/images/aman1.jpg" alt="Aman Project" class="object-cover h-full w-full story-reveal" />
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 story-reveal">
+          <h3 class="text-2xl font-bold text-white mb-2 story-reveal">Aman Project</h3>
+          <p class="text-gray-300 text-center mb-4 story-reveal">
+            An immersive virtual museum experience with interactive exhibits.
+          </p>
+          <button 
+            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video story-reveal"
+            data-video="Media/videos/aman.mp4">
+            View Project
+          </button>
+        </div>
+      </div>
+      <!-- Project 3 -->
+      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic reveal story-reveal">
+        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center story-reveal">
+          <img src="Media/images/1st.jpg" alt="First Project" class="object-cover h-full w-full story-reveal" />
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 story-reveal">
+          <h3 class="text-2xl font-bold text-white mb-2 story-reveal">First Project</h3>
+          <p class="text-gray-300 text-center mb-4 story-reveal">
+            An immersive virtual museum experience with interactive exhibits.
+          </p>
+          <button 
+            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video story-reveal"
+            data-video="Media/videos/lifetrons.mp4">
+            View Project
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- Project Modal -->
     <div class="project-modal fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center opacity-0 invisible transition-all duration-300" id="project-modal">
@@ -208,10 +354,10 @@
                         Project description will be loaded here.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all">
+                        <a href="#" class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all magnetic reveal">
                             Visit Website
                         </a>
-                        <a href="#" class="px-6 py-3 border-2 border-gray-400 text-gray-300 dark:text-gray-300 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition-all">
+                        <a href="#" class="px-6 py-3 border-2 border-gray-400 text-gray-300 dark:text-gray-300 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition-all magnetic reveal">
                             Case Study
                         </a>
                     </div>
@@ -240,7 +386,7 @@
     </div>
 
     <!-- 360° Gallery Section -->
-    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800">
+    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800" data-aos="fade-up">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -265,7 +411,7 @@
                             A sleek, contemporary office environment with panoramic views.
                         </p>
                         <button 
-                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360"
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360 magnetic reveal"
                             data-img="media/360/balcony.jpg">
                             Explore
                         </button>
@@ -285,7 +431,7 @@
                             A peaceful forest cabin surrounded by nature in all directions.
                         </p>
                         <button 
-                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360"
+                            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360 magnetic reveal"
                             data-img="Media/360/bathroom.jpg">
                             Explore
                         </button>
@@ -307,7 +453,7 @@
     </div>
 
     <!-- Virtual Tour Section -->
-    <section id="virtual-tour" class="py-20 bg-gray-900 dark:bg-gray-900">
+    <section id="virtual-tour" class="py-20 bg-gray-900 dark:bg-gray-900 story-reveal">
       <div class="container mx-auto px-6">
         <div class="text-center mb-10">
           <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
@@ -333,7 +479,7 @@
     </section>
 
     <!-- 3D Models Section -->
-    <section id="models" class="py-20 bg-gray-900 dark:bg-gray-900">
+    <section id="models" class="py-20 bg-gray-900 dark:bg-gray-900 story-reveal">
         <div class="container mx-auto px-6">
             <!-- Header -->
             <div class="text-center mb-16">
@@ -396,7 +542,7 @@
     </section>
 
     <!-- Quiz Section -->
-    <section id="quiz" class="py-20 bg-gray-100 dark:bg-gray-800">
+    <section id="quiz" class="py-20 bg-gray-100 dark:bg-gray-800 story-reveal">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -423,7 +569,7 @@
                         What does the term "polygon count" refer to in 3D modeling?
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="options-container">
-                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
+                        <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors magnetic reveal">
                             The number of polygons in a 3D model
                         </div>
                         <div class="quiz-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-dark dark:hover:border-primary-light transition-colors">
@@ -467,14 +613,14 @@
                     <i class="fab fa-github"></i>
                 </a>
             </div>
-            <button class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all w-full" id="close-results">
+            <button class="px-6 py-3 bg-primary-dark dark:bg-primary-light text-white rounded-full font-semibold hover:bg-opacity-90 transition-all w-full magnetic reveal" id="close-results">
                 Back to Site
             </button>
         </div>
     </div>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-gray-900 dark:bg-gray-900">
+    <section id="contact" class="py-20 bg-gray-900 dark:bg-gray-900 story-reveal">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white">
@@ -525,16 +671,16 @@
                         </div>
                         
                         <div class="mt-8 flex space-x-4">
-                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all magnetic reveal">
                                 <i class="fab fa-twitter"></i>
                             </a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all magnetic reveal">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all magnetic reveal">
                                 <i class="fab fa-dribbble"></i>
                             </a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-all magnetic reveal">
                                 <i class="fab fa-linkedin-in"></i>
                             </a>
                         </div>
@@ -562,7 +708,7 @@
                                 <textarea id="message" rows="4" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light text-white placeholder-gray-400" placeholder="Tell us about your project..."></textarea>
                             </div>
                             
-                            <button type="submit" class="w-full px-6 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center">
+                            <button type="submit" class="w-full px-6 py-3 bg-primary-dark dark:bg-primary-light text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center magnetic reveal">
                                 <span id="submit-text">Send Message</span>
                                 <svg id="submit-spinner" class="animate-spin -mr-1 ml-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -577,100 +723,100 @@
     </section>
 
     <!-- Moodboard Section -->
-    <section id="moodboard" class="py-20 bg-gray-100 dark:bg-gray-800">
-      <div class="container mx-auto px-6">
-        <div class="text-center mb-14">
-          <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-            Creative <span class="text-primary-dark dark:text-primary-light">Moodboard</span>
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Explore the inspirations, colors, and textures that shape our 3D design vision.
-          </p>
-        </div>
-        <div class="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
-          <!-- Moodboard Item 1 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood1.jpg" alt="Mood 1" class="w-full object-cover h-56">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-blue-400"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-indigo-500"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-gray-300"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Futuristic Calm</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">Soft gradients and cool tones for a modern, tranquil vibe.</div>
-            </div>
+    <section id="moodboard" class="py-20 bg-gray-100 dark:bg-gray-800 story-reveal">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-14">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white story-reveal">
+        Creative <span class="text-primary-dark dark:text-primary-light story-reveal">Moodboard</span>
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto story-reveal">
+        Explore the inspirations, colors, and textures that shape our 3D design vision.
+      </p>
+    </div>
+    <div class="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
+      <!-- Moodboard Item 1 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood1.jpg" alt="Mood 1" class="w-full object-cover h-56 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-blue-400 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-indigo-500 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-gray-300 color-pop story-reveal"></span>
           </div>
-          <!-- Moodboard Item 2 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood2.jpg" alt="Mood 2" class="w-full object-cover h-72">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-yellow-400"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-orange-500"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-red-400"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Energetic Warmth</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">Bold, energetic colors for creative spark and passion.</div>
-            </div>
-          </div>
-          <!-- Moodboard Item 3 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood3.jpg" alt="Mood 3" class="w-full object-cover h-64">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-green-400"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-teal-500"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-gray-200"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Natural Harmony</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">Organic textures and earthy hues for balance and growth.</div>
-            </div>
-          </div>
-          <!-- Moodboard Item 4 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood4.jpg" alt="Mood 4" class="w-full object-cover h-56">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-purple-400"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-pink-500"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-gray-300"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Dreamy Pastels</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">Soft pastel shades for a whimsical, imaginative feel.</div>
-            </div>
-          </div>
-          <!-- Moodboard Item 5 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood5.jpg" alt="Mood 5" class="w-full object-cover h-72">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-gray-900"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-gray-600"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-white border border-gray-300"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Minimal Contrast</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">High contrast and minimalism for clarity and focus.</div>
-            </div>
-          </div>
-          <!-- Moodboard Item 6 -->
-          <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105">
-            <img src="assets/media/images/mood6.jpg" alt="Mood 6" class="w-full object-cover h-64">
-            <div class="p-5">
-              <div class="flex items-center space-x-2 mb-2">
-                <span class="inline-block w-5 h-5 rounded-full bg-cyan-400"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-blue-700"></span>
-                <span class="inline-block w-5 h-5 rounded-full bg-white border border-gray-300"></span>
-              </div>
-              <div class="font-semibold text-gray-900 dark:text-white mb-1">Tech Inspiration</div>
-              <div class="text-gray-500 dark:text-gray-300 text-sm">Crisp lines and digital blues for a tech-forward look.</div>
-            </div>
-          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Futuristic Calm</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">Soft gradients and cool tones for a modern, tranquil vibe.</div>
         </div>
       </div>
-    </section>
+      <!-- Moodboard Item 2 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood2.jpg" alt="Mood 2" class="w-full object-cover h-72 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-yellow-400 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-orange-500 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-red-400 color-pop story-reveal"></span>
+          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Energetic Warmth</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">Bold, energetic colors for creative spark and passion.</div>
+        </div>
+      </div>
+      <!-- Moodboard Item 3 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood3.jpg" alt="Mood 3" class="w-full object-cover h-64 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-green-400 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-teal-500 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-gray-200 color-pop story-reveal"></span>
+          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Natural Harmony</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">Organic textures and earthy hues for balance and growth.</div>
+        </div>
+      </div>
+      <!-- Moodboard Item 4 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood4.jpg" alt="Mood 4" class="w-full object-cover h-56 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-purple-400 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-pink-500 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-gray-300 color-pop story-reveal"></span>
+          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Dreamy Pastels</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">Soft pastel shades for a whimsical, imaginative feel.</div>
+        </div>
+      </div>
+      <!-- Moodboard Item 5 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood5.jpg" alt="Mood 5" class="w-full object-cover h-72 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-gray-900 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-gray-600 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-white border border-gray-300 color-pop story-reveal"></span>
+          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Minimal Contrast</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">High contrast and minimalism for clarity and focus.</div>
+        </div>
+      </div>
+      <!-- Moodboard Item 6 -->
+      <div class="break-inside-avoid rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-700 group transition-transform hover:scale-105 magnetic reveal story-reveal">
+        <img src="assets/media/images/mood6.jpg" alt="Mood 6" class="w-full object-cover h-64 story-reveal">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-2 story-reveal">
+            <span class="inline-block w-5 h-5 rounded-full bg-cyan-400 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-blue-700 color-pop story-reveal"></span>
+            <span class="inline-block w-5 h-5 rounded-full bg-white border border-gray-300 color-pop story-reveal"></span>
+          </div>
+          <div class="font-semibold text-gray-900 dark:text-white mb-1 story-reveal">Tech Inspiration</div>
+          <div class="text-gray-500 dark:text-gray-300 text-sm story-reveal">Crisp lines and digital blues for a tech-forward look.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!--  SVG divider between sections 
+    <!-- SVG divider between sections 
     <div class="w-full overflow-hidden">
       <svg viewBox="0 0 1440 100" class="w-full" preserveAspectRatio="none">
         <path fill="#6366f1" fill-opacity="0.15" d="M0,0 C480,100 960,0 1440,100 L1440,100 L0,100 Z"></path>
@@ -711,23 +857,52 @@
                 </div>
             </div>
         </div>
+        <!-- Accessibility Button: fixed at bottom left of the footer -->
+        <button id="contrast-toggle" aria-pressed="false" aria-label="Toggle high contrast mode"
+          class="fixed left-6 bottom-6 z-50 w-12 h-12 flex items-center justify-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-dark dark:focus:ring-primary-light shadow-lg"
+          tabindex="0"
+          style="box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);">
+          <span class="sr-only">Toggle high contrast mode</span>
+          <svg id="contrast-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-black dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <path d="M12 2v20" stroke-width="2"/>
+          </svg>
+        </button>
     </footer>
 
     <!-- Floating Back-to-Top Arrow -->
     <a href="#home" id="floating-back-to-hero-arrow"
-   class="fixed bottom-6 right-6 z-50 bg-primary-dark dark:bg-primary-light rounded-full shadow-lg flex items-center justify-center w-14 h-14 transition-transform hover:scale-110 animate-bounce cursor-pointer group visible"
-   aria-label="Back to top">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="h-10 w-10 text-white group-hover:text-primary-light transition-colors transform rotate-180"
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-    </svg>
-</a>
+       class="fixed bottom-6 right-6 z-50 bg-primary-dark dark:bg-primary-light rounded-full shadow-lg flex items-center justify-center w-14 h-14 transition-transform hover:scale-110 animate-bounce cursor-pointer group visible magnetic reveal"
+       aria-label="Back to top" tabindex="0">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-10 w-10 text-white group-hover:text-primary-light transition-colors transform rotate-180"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+    </a>
+
+    <!-- Floating Section Indicator Navigation -->
+    <div id="floating-section-nav" aria-label="Section navigation">
+      <div class="floating-section-dot" data-section="home" data-label="Home" tabindex="0" aria-label="Go to Home"></div>
+      
+      <div class="floating-section-dot" data-section="gallery" data-label="360° Gallery" tabindex="0" aria-label="Go to 360° Gallery"></div>
+      <div class="floating-section-dot" data-section="projects" data-label="Projects" tabindex="0" aria-label="Go to Projects"></div>
+      <div class="floating-section-dot" data-section="quiz" data-label="Quiz" tabindex="0" aria-label="Go to Quiz"></div>
+      <div class="floating-section-dot" data-section="contact" data-label="Contact" tabindex="0" aria-label="Go to Contact"></div>
+      <div class="floating-section-dot" data-section="moodboard" data-label="Moodboard" tabindex="0" aria-label="Go to Moodboard"></div>
+    </div>
 
     <script src="assets/js/main.js"></script>
-    
-   
+
+    <script>
+      AOS.init({
+        duration: 900,
+        once: true,
+        offset: 80,
+        easing: 'ease-out-cubic'
+      });
+    </script>
 
     <script>
     // 360° Modal logic
@@ -764,7 +939,7 @@
             video.load();
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modal.classList.add('opacity-100');
-            video.play(); // <-- Add this line for autoplay
+            video.play();
         });
     });
     document.getElementById('close-project-video').addEventListener('click', function() {
@@ -778,36 +953,111 @@
     </script>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const arrow = document.getElementById('floating-back-to-hero-arrow');
-    const gallery = document.getElementById('gallery');
-    const footer = document.querySelector('footer');
+    document.addEventListener('DOMContentLoaded', function() {
+        const arrow = document.getElementById('floating-back-to-hero-arrow');
+        const virtualTour = document.getElementById('virtual-tour');
+        const footer = document.querySelector('footer');
 
-    function updateArrow() {
-        const galleryBottom = gallery.getBoundingClientRect().bottom + window.scrollY;
-        const footerRect = footer.getBoundingClientRect();
-        const windowBottom = window.scrollY + window.innerHeight;
-        const overlap = windowBottom - (footer.offsetTop);
+        function updateArrow() {
+            const virtualTourTop = virtualTour.getBoundingClientRect().top + window.scrollY;
+            const footerRect = footer.getBoundingClientRect();
+            const windowBottom = window.scrollY + window.innerHeight;
+            const overlap = windowBottom - (footer.offsetTop);
 
-        // Show/hide arrow after gallery
-        if (window.scrollY > galleryBottom - window.innerHeight * 0.5) {
-            arrow.classList.add('visible');
-        } else {
-            arrow.classList.remove('visible');
+            // Show/hide arrow after virtual tour section
+            if (window.scrollY > virtualTourTop - window.innerHeight * 0.5) {
+                arrow.classList.add('visible');
+            } else {
+                arrow.classList.remove('visible');
+            }
+
+            // Move arrow up if overlapping footer
+            if (overlap > 0) {
+                arrow.style.transform = `translateY(-${overlap + 24}px)`;
+            } else {
+                arrow.style.transform = 'translateY(0)';
+            }
         }
 
-        // Move arrow up if overlapping footer
-        if (overlap > 0) {
-            arrow.style.transform = `translateY(-${overlap + 24}px)`; // 24px = bottom-6
-        } else {
-            arrow.style.transform = 'translateY(0)';
+        window.addEventListener('scroll', updateArrow);
+        window.addEventListener('resize', updateArrow);
+        updateArrow();
+    });
+    </script>
+
+    <script>
+    // Storytelling scroll animation logic
+    function handleStoryReveal() {
+      document.querySelectorAll('.story-reveal').forEach((el, i) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.88) {
+          setTimeout(() => el.classList.add('visible'), i * 120);
         }
+      });
     }
+    window.addEventListener('scroll', handleStoryReveal, { passive: true });
+    window.addEventListener('load', handleStoryReveal);
+    </script>
 
-    window.addEventListener('scroll', updateArrow);
-    window.addEventListener('resize', updateArrow);
-    updateArrow();
-});
-</script>
+    <script>
+    // Floating section nav logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const nav = document.getElementById('floating-section-nav');
+      const dots = Array.from(nav.querySelectorAll('.floating-section-dot'));
+      const sectionIds = dots.map(dot => dot.getAttribute('data-section'));
+      const sections = sectionIds.map(id => document.getElementById(id));
+
+      // Scroll to section on dot click
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          const section = sections[i];
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+        dot.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            dot.click();
+          }
+        });
+      });
+
+      // Highlight active section
+      function updateActiveDot() {
+        let activeIdx = 0;
+        const scrollY = window.scrollY + window.innerHeight / 3;
+        for (let i = 0; i < sections.length; i++) {
+          if (sections[i] && sections[i].offsetTop <= scrollY) {
+            activeIdx = i;
+          }
+        }
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === activeIdx);
+        });
+      }
+
+      window.addEventListener('scroll', updateActiveDot);
+      window.addEventListener('resize', updateActiveDot);
+      updateActiveDot();
+    });
+    </script>
+
+    <script>
+    // High Contrast Mode Toggle
+    const contrastToggle = document.getElementById('contrast-toggle');
+    if (contrastToggle) {
+      contrastToggle.addEventListener('click', function () {
+        const isActive = document.body.classList.toggle('high-contrast');
+        contrastToggle.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      contrastToggle.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          contrastToggle.click();
+        }
+      });
+    }
+    </script>
 </body>
 </html>
