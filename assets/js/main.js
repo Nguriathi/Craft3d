@@ -327,6 +327,17 @@ function selectOption(index, optionElement) {
         scoreDisplay.textContent = score;
     }
 
+    // --- Ripple effect (add this here) ---
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const rect = optionElement.getBoundingClientRect();
+    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+    ripple.style.left = (event ? event.offsetX : rect.width/2) - rect.width/2 + 'px';
+    ripple.style.top = (event ? event.offsetY : rect.height/2) - rect.height/2 + 'px';
+    optionElement.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+    // -------------------------------------
+
     setTimeout(() => {
         optionsContainer.classList.remove('answered');
         currentQuestion++;
@@ -336,21 +347,6 @@ function selectOption(index, optionElement) {
             showResults();
         }
     }, 700); // Short delay for feedback
-
-    // Ripple effect
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple';
-    const rect = optionElement.getBoundingClientRect();
-    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
-    ripple.style.left = (event ? event.offsetX : rect.width/2) - rect.width/2 + 'px';
-    ripple.style.top = (event ? event.offsetY : rect.height/2) - rect.height/2 + 'px';
-    optionElement.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 500);
-
-    if (index === quizData[currentQuestion].answer) {
-        optionElement.classList.add('correct');
-        setTimeout(() => optionElement.classList.remove('correct'), 700);
-    }
 }
 
 function showResults() {
@@ -535,21 +531,4 @@ window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
 
 
-// Add to selectOption in main.js
-function selectOption(index, optionElement) {
-  // Ripple effect
-  const ripple = document.createElement('span');
-  ripple.className = 'ripple';
-  const rect = optionElement.getBoundingClientRect();
-  ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
-  ripple.style.left = (event ? event.offsetX : rect.width/2) - rect.width/2 + 'px';
-  ripple.style.top = (event ? event.offsetY : rect.height/2) - rect.height/2 + 'px';
-  optionElement.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 500);
-
-  if (index === quizData[currentQuestion].answer) {
-    optionElement.classList.add('correct');
-    setTimeout(() => optionElement.classList.remove('correct'), 700);
-  }
-}
 
