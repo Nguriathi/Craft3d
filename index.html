@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
+    <!-- Add this to your <head> section if not already present -->
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+
     <style>
     /* Scroll storytelling reveal animation */
     .story-reveal {
@@ -221,10 +224,21 @@
                 <a href="#contact" class="mobile-menu-link text-2xl text-white opacity-0 magnetic reveal" aria-label="Go to Contact" tabindex="0">Contact</a>
             </nav>
             <div class="mobile-menu-social absolute bottom-12 left-0 right-0 flex justify-center space-x-6 opacity-0">
-                <a href="#" class="text-white text-xl" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-white text-xl" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="text-white text-xl" aria-label="Dribbble"><i class="fab fa-dribbble"></i></a>
-                <a href="#" class="text-white text-xl" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="TikTok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Behance">
+                            <i class="fab fa-behance"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Pinterest">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
             </div>
         </div>
     </div>
@@ -232,10 +246,20 @@
     <!-- Hero section -->
     <section id="home" class="relative h-screen flex items-center overflow-hidden" data-aos="fade-up">
         <div class="absolute inset-0 z-0 story-reveal">
-            <video autoplay muted loop class="w-full h-full object-cover story-reveal">
-                <source src="media/videos/cups.mp4" type="video/mp4">
+            <!-- Multiple background videos -->
+            <video autoplay muted loop class="w-full h-full object-cover story-reveal absolute inset-0" style="z-index:1;">
+                <source src="Media/videos/cups.mp4" type="video/mp4">
             </video>
-            <div class="absolute inset-0 hero-overlay story-reveal"></div>
+            <video autoplay muted loop class="w-full h-full object-cover story-reveal absolute inset-0" style="z-index:2;">
+                <source src="Media/videos/petals.mp4" type="video/mp4">
+            </video>
+            <video autoplay muted loop class="w-full h-full object-cover story-reveal absolute inset-0" style="z-index:2;">
+                <source src="Media/videos/drive.mp4" type="video/mp4">
+            </video>
+            <video autoplay muted loop class="w-full h-full object-cover story-reveal absolute inset-0" style="z-index:2;">
+                <source src="Media/videos/drive.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 hero-overlay story-reveal" style="z-index:3;"></div>
         </div>
 
         <div class="relative z-10 container mx-auto px-6">
@@ -267,124 +291,87 @@
     </section>
 
     <!-- Featured Projects Section -->
-<section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900" data-aos="fade-up">
-  <div class="container mx-auto px-6">
+<section id="projects" class="py-20 bg-gray-900 dark:bg-gray-900 px-6 md:px-12 lg:px-24" data-aos="fade-up">
+  <div class="container mx-auto">
     <div class="text-center mb-16">
       <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white" data-aos="fade-right">
         Featured <span class="text-primary-dark dark:text-primary-light">Projects</span>
       </h2>
       <p class="text-xl text-gray-300 dark:text-gray-400 max-w-3xl mx-auto" data-aos="fade-left" data-aos-delay="200">
-        Our most innovative and impactful 3D design projects.
+        Our 3D animation projects.
       </p>
     </div>
     <!-- Responsive grid: 2 col (sm+), 3 col (lg+) -->
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-8 opacity-0 transition-opacity duration-700" id="projects-grid">
-      <!-- Project 1 -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/smartwatch.png" alt="Smart Watch" class="object-cover h-full w-full" />
+      <!-- Project Card Example with 3D Feel and VanillaTilt -->
+      <div class="project-card-3d group relative overflow-visible rounded-xl shadow-2xl magnetic transition-transform duration-300 hover:-translate-y-4 hover:scale-105"
+           style="perspective: 1200px;">
+        <div class="relative h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center rounded-xl shadow-xl transition-transform duration-300 group-hover:rotate-x-6 group-hover:rotate-y-3"
+             style="transform-style: preserve-3d;">
+          <img src="Media/images/smartwatch.png" alt="Smart Watch" class="object-cover h-full w-full rounded-xl shadow-lg" style="transform: translateZ(20px);" />
         </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">Smart Watch</h3>
-          <p class="text-gray-300 text-center mb-4">
-            An immersive virtual museum experience with interactive exhibits.
-          </p>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 rounded-xl"
+             style="backdrop-filter: blur(2px);">
+          <h3 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">Smart Watch</h3>
           <button 
             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/smartwatch.mp4">
+            data-video="Media/videos/smartwatch.mp4">
             View Project
           </button>
         </div>
       </div>
       <!-- Aman Project -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/aman1.jpg" alt="Aman Project" class="object-cover h-full w-full" />
+      <div class="project-card-3d group relative overflow-visible rounded-xl shadow-2xl magnetic transition-transform duration-300 hover:-translate-y-4 hover:scale-105"
+           style="perspective: 1200px;">
+        <div class="relative h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center rounded-xl shadow-xl transition-transform duration-300 group-hover:rotate-x-6 group-hover:rotate-y-3"
+             style="transform-style: preserve-3d;">
+          <img src="Media/images/aman1.jpg" alt="Aman Project" class="object-cover h-full w-full rounded-xl shadow-lg" style="transform: translateZ(20px);" />
         </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">Aman Project</h3>
-          <p class="text-gray-300 text-center mb-4">
-            Inspired by tranquility and balance, the Aman Project brings serenity into everyday spaces. With soft curves and a calming palette, this design invites you to pause, breathe, and enjoy a moment of peace—crafted with care for modern living.
-          </p>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 rounded-xl"
+             style="backdrop-filter: blur(2px);">
+          <h3 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">Aman Project</h3>
           <button 
             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/aman.mp4">
+            data-video="Media/videos/aman.mp4">
             View Project
           </button>
         </div>
       </div>
       <!-- First Project -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/1st.jpg" alt="First Project" class="object-cover h-full w-full" />
+      <div class="project-card-3d group relative overflow-visible rounded-xl shadow-2xl magnetic transition-transform duration-300 hover:-translate-y-4 hover:scale-105"
+           style="perspective: 1200px;">
+        <div class="relative h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center rounded-xl shadow-xl transition-transform duration-300 group-hover:rotate-x-6 group-hover:rotate-y-3"
+             style="transform-style: preserve-3d;">
+          <img src="Media/images/1st.jpg" alt="First Project" class="object-cover h-full w-full rounded-xl shadow-lg" style="transform: translateZ(20px);" />
         </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">First Project</h3>
-          <p class="text-gray-300 text-center mb-4">
-            Our journey began here. The First Project is a celebration of bold ideas and creative courage, featuring dynamic forms and a playful use of color. It’s a reminder that every masterpiece starts with a single inspired step.
-          </p>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 rounded-xl"
+             style="backdrop-filter: blur(2px);">
+          <h3 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">Lifetrons Bluetooth Speaker</h3>
           <button 
             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/lifetrons.mp4">
+            data-video="Media/videos/lifetrons.mp4">
             View Project
           </button>
         </div>
       </div>
-
-      <!-- Project 4 -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/rolex.jpg" alt="Rolex" class="object-cover h-full w-full" />
+      <!-- Rolex -->
+      <div class="project-card-3d group relative overflow-visible rounded-xl shadow-2xl magnetic transition-transform duration-300 hover:-translate-y-4 hover:scale-105"
+           style="perspective: 1200px;">
+        <div class="relative h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center rounded-xl shadow-xl transition-transform duration-300 group-hover:rotate-x-6 group-hover:rotate-y-3"
+             style="transform-style: preserve-3d;">
+          <img src="Media/images/rolex.jpg" alt="Rolex" class="object-cover h-full w-full rounded-xl shadow-lg" style="transform: translateZ(20px);" />
         </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">Rolex</h3>
-          <p class="text-gray-300 text-center mb-4">
-            Precision meets prestige. This digital homage to the iconic Rolex captures every detail, from the lustrous finish to the intricate mechanics. A showcase of our commitment to excellence and timeless design.
-          </p>
+        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 rounded-xl"
+             style="backdrop-filter: blur(2px);">
+          <h3 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">Rolex Submariner</h3>
           <button 
             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/rolex.mp4">
+            data-video="Media/videos/rolex.mp4">
             View Project
           </button>
         </div>
       </div>
-      <!-- Project 2 -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/aman1.jpg" alt="Aman Project" class="object-cover h-full w-full" />
-    </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">Aman Project</h3>
-          <p class="text-gray-300 text-center mb-4">
-            An immersive virtual museum experience with interactive exhibits.
-          </p>
-          <button 
-            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/aman.mp4">
-            View Project
-          </button>
-        </div>
-      </div>
-      <!-- Project 3 -->
-      <div class="group relative overflow-hidden rounded-xl shadow-xl magnetic">
-        <div class="h-64 bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-          <img src="media/images/1st.jpg" alt="First Project" class="object-cover h-full w-full" />
-        </div>
-        <div class="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6">
-          <h3 class="text-2xl font-bold text-white mb-2">First Project</h3>
-          <p class="text-gray-300 text-center mb-4">
-            An immersive virtual museum experience with interactive exhibits.
-          </p>
-          <button 
-            class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-project-video reveal"
-            data-video="media/videos/lifetrons.mp4">
-            View Project
-          </button>
-        </div>
-      </div>
-
-
-
+      <!-- Repeat for any additional cards as needed -->
     </div>
   </div>
 </section>
@@ -523,7 +510,7 @@
           <div class="w-full lg:w-1/2 max-w-lg">
             <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Modern Bathroom Retreat</h3>
             <p class="text-gray-300 dark:text-gray-400 mb-8">
-              Step into a sanctuary of calm. This modern bathroom is designed for relaxation, featuring clean lines, soft lighting, and luxurious finishes. Imagine the gentle sound of water, the warmth of natural stone, and the subtle glow of ambient lights—every detail invites you to unwind and recharge in style.
+              This modern bathroom blends clean lines, ambient lighting, and luxurious finishes to create a tranquil escape. With the soothing sounds of water, warm natural stone, and gentle illumination, every element is thoughtfully designed to help you unwind and rejuvenate in sophisticated comfort.
             </p>
             <ul class="mb-8 space-y-4">
               <li class="flex items-start">
@@ -570,8 +557,8 @@
 
 
     <!-- 360° Gallery Section -->
-    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800" data-aos="fade-up">
-        <div class="container mx-auto px-6">
+    <section id="gallery" class="py-20 bg-gray-100 dark:bg-gray-800 px-6 md:px-12 lg:px-24" data-aos="fade-up">
+        <div class="container mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
                     Immersive <span class="text-primary-dark dark:text-primary-light">360° Gallery</span>
@@ -592,7 +579,7 @@
                     <div class="p-6">
                         <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Modern Office Space</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-4">
-                          Discover a workspace where creativity thrives. This modern office features panoramic windows, minimalist furnishings, and an open layout that encourages collaboration and inspiration. Every detail is designed to boost productivity and well-being.
+                          Imagine retreating to your personal haven, a serene balcony that exudes tranquility.  Envision starting your day with a cup of coffee or winding down with a glass of wine in this oasis—surrounded by a soft, inviting ambiance . Here, you can escape from the chaos of daily life and find a moment of peace.
                         </p>
                         <button 
                             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360 magnetic reveal"
@@ -605,18 +592,18 @@
                 <!-- Gallery Item 2 -->
                 <div class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-xl">
                     <div class="relative h-80 flex items-center justify-center">
-                        <img src="media/360/bathroom.jpg" alt="360° View 2" class="absolute inset-0 w-full h-full object-cover" />
+                        <img src="Media/360/bathroom.jpg" alt="360° View 2" class="absolute inset-0 w-full h-full object-cover" />
                         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
                         <div class="relative z-10 text-white text-4xl font-bold drop-shadow-lg">360° View 2</div>
                     </div>
                     <div class="p-6">
                         <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Nature Retreat</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-4">
-                          Escape to tranquility. Surrounded by lush greenery and natural textures, this retreat blends indoor comfort with the beauty of the outdoors. It’s a perfect setting for reflection, creativity, or simply enjoying the peace of nature.
+                          Your daily dose of "me time" just got an upgrade. This bathroom isn't just functional—it's your personal escape pod. Imagine stepping in after a long day and feeling all that tension just melt away. The sleek design doesn't feel cold or sterile; instead, it wraps you in warmth with gorgeous stone textures and lighting that's just dim enough to help your mind slow down.
                         </p>
                         <button 
                             class="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all open-360 magnetic reveal"
-                            data-img="media/360/bathroom.jpg">
+                            data-img="Media/360/bathroom.jpg">
                             Explore
                         </button>
                     </div>
@@ -640,8 +627,8 @@
 
 
     <!-- Moodboard Section -->
-    <section id="moodboard" class="py-20 bg-gray-900 dark:bg-gray-900 story-reveal">
-  <div class="container mx-auto px-6">
+    <section id="moodboard" class="py-20 bg-gray-900 dark:bg-gray-900 px-6 md:px-12 lg:px-24 story-reveal">
+  <div class="container mx-auto">
     <div class="text-center mb-14">
       <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
         Inspiration <span class="text-primary-dark dark:text-primary-light">Moodboard</span>
@@ -765,7 +752,7 @@
                     What does the term "polygon count" refer to in 3D modeling?
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="options-container">
-                    <!-- JS inject options here -->
+                    <!-- JS inject -->
                     </div>
                 </div>
             </div>
@@ -822,7 +809,7 @@
                       <div class="absolute inset-0 w-full h-full backdrop-blur-xl bg-white/20 dark:bg-black/20 z-0"></div>
                       <!-- Video always on top of blur -->
                       <video 
-                      src="media/videos/cups.mp4" type="video/mp4"
+                     
                         autoplay 
                         muted 
                         loop 
@@ -877,24 +864,25 @@
                     <a href="#" class="text-2xl font-bold text-white dark:text-white">
                         <span class="text-primary-dark dark:text-primary-light">Craft</span>3d
                     </a>
-                    <p class="text-gray-400 mt-2">
-                        Crafting the future of 3D design since 2025.
-                </p>
+                    
             </div>
 
                 <div class="flex flex-col items-center md:items-end">
                     <div class="flex space-x-6 mb-4">
-                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
-                            <i class="fab fa-dribbble"></i>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="TikTok">
+                            <i class="fab fa-tiktok"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors">
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Behance">
+                            <i class="fab fa-behance"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="GitHub">
                             <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary-dark dark:hover:text-primary-light transition-colors" aria-label="Pinterest">
+                            <i class="fab fa-pinterest"></i>
                         </a>
                     </div>
                     <p class="text-gray-500 text-sm">
@@ -1011,17 +999,17 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const arrow = document.getElementById('floating-back-to-hero-arrow');
-        const virtualTour = document.getElementById('virtual-tour');
+        const gallery = document.getElementById('gallery');
         const footer = document.querySelector('footer');
 
         function updateArrow() {
-            const virtualTourTop = virtualTour.getBoundingClientRect().top + window.scrollY;
+            const galleryTop = gallery.getBoundingClientRect().top + window.scrollY;
             const windowScroll = window.scrollY;
             const windowBottom = window.scrollY + window.innerHeight;
             const overlap = windowBottom - (footer.offsetTop);
 
-            // Show/hide arrow: only visible after user scrolls past virtual tour section
-            if (windowScroll >= virtualTourTop) {
+            // Show/hide arrow: only visible after user scrolls to the 360° Gallery section
+            if (windowScroll >= galleryTop - 40) {
                 arrow.classList.add('visible');
             } else {
                 arrow.classList.remove('visible');
@@ -1063,19 +1051,40 @@
       const sectionIds = dots.map(dot => dot.getAttribute('data-section'));
       const sections = sectionIds.map(id => document.getElementById(id));
       const hero = document.getElementById('home');
+      let hideTimeout = null;
+      let lastScroll = Date.now();
 
-      // Show/hide nav after hero
+      // Show nav on scroll, hide after 2s of inactivity in a section
+      function showNav() {
+        nav.style.opacity = '1';
+        nav.style.pointerEvents = 'auto';
+        if (hideTimeout) clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+          nav.style.opacity = '0';
+          nav.style.pointerEvents = 'none';
+        }, 2000);
+      }
+
+      // Hide nav in hero section
       function updateNavVisibility() {
         const heroRect = hero.getBoundingClientRect();
         if (heroRect.bottom - 80 > 0) {
           nav.style.opacity = '0';
           nav.style.pointerEvents = 'none';
-        } else {
-          nav.style.opacity = '1';
-          nav.style.pointerEvents = 'auto';
+          if (hideTimeout) clearTimeout(hideTimeout);
         }
       }
-      window.addEventListener('scroll', updateNavVisibility, { passive: true });
+
+      window.addEventListener('scroll', () => {
+        updateNavVisibility();
+        // Only show/hide nav if not in hero
+        const heroRect = hero.getBoundingClientRect();
+        if (heroRect.bottom - 80 <= 0) {
+          showNav();
+        }
+        lastScroll = Date.now();
+      }, { passive: true });
+
       window.addEventListener('resize', updateNavVisibility);
       updateNavVisibility();
 
@@ -1132,7 +1141,6 @@
     }
     </script>
 
-    <!-- Add this script before </body> -->
 <script>
   // Fade in the projects grid and moodboard grid when they appear
   document.addEventListener('DOMContentLoaded', function() {
@@ -1146,6 +1154,21 @@
         moodboardGrid.style.opacity = '1';
       }
     }, 200); // slight delay for smoothness
+  });
+</script>
+    
+<script>
+  // VanillaTilt 3D effect for project cards
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.VanillaTilt) {
+      VanillaTilt.init(document.querySelectorAll('.project-card-3d'), {
+        max: 18,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.18,
+        scale: 1.06
+      });
+    }
   });
 </script>
 </body>
