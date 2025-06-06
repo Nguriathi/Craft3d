@@ -134,20 +134,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Back to hero (from quiz arrow) smooth scroll
-const backArrow = document.getElementById('back-to-hero-arrow');
-if (backArrow) {
-    backArrow.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.getElementById('home');
-        if (target) {
-            window.scrollTo({
-                top: target.offsetTop - 80,
-                behavior: 'smooth'
-            });
-        }
-    });
-}
+
 
 // Project modal
 const projectButtons = document.querySelectorAll('.view-project');
